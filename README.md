@@ -21,7 +21,7 @@ Create a .env file
 touch .env
 ```
 
-Add this variables
+Add this variables (Feel free to add your desired values)
 
 ```
 DB_USER=rs_auth
