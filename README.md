@@ -41,13 +41,15 @@ docker compose up -d
 cargo build
 ```
 
-### Run App
+### Run App Locally
 
 Make sure cargo watch installed (if not installed)
 
 ```
 cargo install cargo-watch
 ```
+
+Run
 
 ```
 cargo watch -x run
