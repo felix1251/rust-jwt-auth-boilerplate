@@ -22,7 +22,8 @@ pub async fn run() {
             Router::new()
                 .route("/test_json", post(examples::test_json))
                 .route("/path_vars/:id", get(examples::path_vars))
-                .route("/query_params", get(examples::query_params)),
+                .route("/query_params", get(examples::query_params))
+                .route("/headers", get(examples::headers)),
         )
         .fallback(fallback);
 
