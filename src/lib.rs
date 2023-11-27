@@ -6,13 +6,11 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use routes::{
-    examples::{path_vars, test_json},
-    home::home,
-};
+use routes::{examples, home::home};
 
+// Custom not found route fallback
 async fn fallback() -> (StatusCode, &'static str) {
-    (StatusCode::NOT_FOUND, "NOT FOUND")
+    (StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND")
 }
 
 pub async fn run() {
@@ -22,8 +20,9 @@ pub async fn run() {
         .nest(
             "/examples",
             Router::new()
-                .route("/test_json", post(test_json))
-                .route("/path_vars/:id", get(path_vars)),
+                .route("/test_json", post(examples::test_json))
+                .route("/path_vars/:id", get(examples::path_vars))
+                .route("/query_params", get(examples::query_params)),
         )
         .fallback(fallback);
 
