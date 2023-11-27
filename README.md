@@ -13,7 +13,7 @@ Build
 cargo build
 ```
 
-### Setup ENV variables
+- Setup ENV variables
 
 Create a .env file
 
@@ -35,9 +35,13 @@ DB_TEST_NAME=rs_auth_test
 
 Create a docker container for the local DB
 
+- Containerize
+
 ```
 docker compose up -d
 ```
+
+- Own Git repository
 
 Remove git folder, so you can add it to your own repo later.
 
