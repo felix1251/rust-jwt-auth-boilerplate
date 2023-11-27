@@ -840,6 +840,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "project"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "bcrypt",
+ "chrono",
+ "dotenvy",
+ "dotenvy_macro",
+ "jsonwebtoken",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "tokio",
+ "validator",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -889,23 +906,6 @@ dependencies = [
  "spin",
  "untrusted",
  "windows-sys",
-]
-
-[[package]]
-name = "rust"
-version = "0.1.0"
-dependencies = [
- "axum",
- "bcrypt",
- "chrono",
- "dotenvy",
- "dotenvy_macro",
- "jsonwebtoken",
- "serde",
- "serde_json",
- "serde_with",
- "tokio",
- "validator",
 ]
 
 [[package]]
