@@ -14,8 +14,8 @@ pub struct QueryParams {
 }
 
 // Simulate JSON (GET /examples/test_json)
-pub async fn test_json(Json(body): Json<TestJson>) -> Json<TestJson> {
-    Json(body)
+pub async fn test_json(Json(payload): Json<TestJson>) -> Json<TestJson> {
+    Json(payload)
 }
 
 // Simulate path variables (POST /examples/path_vars/:id)
