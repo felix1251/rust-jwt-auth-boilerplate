@@ -7,12 +7,6 @@ git clone https://github.com/felix1251/rust-jwt-auth-boilerplate.git <project-na
 cd <project-name>
 ```
 
-Build
-
-```
-cargo build
-```
-
 ### Setup ENV variables
 
 Create a .env file
@@ -39,6 +33,24 @@ Create a docker container for the local DB
 
 ```
 docker compose up -d
+```
+
+### Build
+
+```
+cargo build
+```
+
+### Run App
+
+Make sure cargo watch installed (if not installed)
+
+```
+cargo install cargo-watch
+```
+
+```
+cargo watch -x run
 ```
 
 ### Own Git repository
