@@ -1,4 +1,6 @@
-## ENV variables
+## Rust JWT Authentication Boilerplate
+
+### Setup ENV variables
 
 Create a .env file and add this variables
 
