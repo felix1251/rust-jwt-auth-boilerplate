@@ -46,5 +46,5 @@ docker compose up -d
 Remove git folder, so you can add it to your own repo later.
 
 ```
-rm .git
+rm -rf .git
 ```
