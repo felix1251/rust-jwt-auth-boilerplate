@@ -6,8 +6,13 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use tower_http::trace::TraceLayer;
 
 pub fn create_routes() -> Router {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
+
     Router::new()
         .route("/", get(home::home))
         .nest(
@@ -18,6 +23,7 @@ pub fn create_routes() -> Router {
                 .route("/query_params", get(examples::query_params))
                 .route("/headers", get(examples::headers)),
         )
+        .layer(TraceLayer::new_for_http())
         .fallback(fallback)
 }
 
