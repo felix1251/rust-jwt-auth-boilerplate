@@ -1,6 +1,8 @@
-use axum::extract::{Path, Query};
-use axum::http::HeaderMap;
-use axum::Json;
+use axum::{
+    extract::{Path, Query},
+    http::HeaderMap,
+    Json,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
