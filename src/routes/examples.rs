@@ -32,7 +32,7 @@ pub async fn query_params(Query(query): Query<QueryParams>) -> Json<QueryParams>
 }
 
 // Simulate headers (GET /examples/headers)
-pub async fn headers(mut headers: HeaderMap) -> HeaderMap {
-    headers.insert("x-my-hdr", "abc".parse().unwrap());
-    headers
+pub async fn headers(headers: HeaderMap) -> String {
+    let messsage_value = headers.get("x-my-hdr").unwrap();
+    messsage_value.to_str().unwrap().to_owned()
 }
