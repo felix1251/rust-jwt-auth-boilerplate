@@ -16,7 +16,7 @@ pub fn create_routes() -> Router {
         .with_max_level(tracing::Level::DEBUG)
         .init();
 
-    let trace_layer = TraceLayer::new_for_http();
+    let trace = TraceLayer::new_for_http();
 
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::DELETE])
@@ -32,7 +32,7 @@ pub fn create_routes() -> Router {
                 .route("/query_params", get(examples::query_params))
                 .route("/headers", get(examples::headers)),
         )
-        .layer(trace_layer)
+        .layer(trace)
         .layer(cors)
         .fallback(fallback)
 }
