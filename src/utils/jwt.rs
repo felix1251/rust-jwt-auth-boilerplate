@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserClaims {
     user_id: String, // ID of the user
-    exp: usize,      // Expiration time (as UTC timestamp
+    exp: usize,      // Expiration time (as UTC timestamp)
     iat: usize,      // Issued at (as UTC timestamp)
 }
 
