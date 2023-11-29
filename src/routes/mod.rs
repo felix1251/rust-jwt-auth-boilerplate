@@ -2,7 +2,10 @@ mod examples;
 mod home;
 
 use axum::{
+    extract::Request,
     http::{Method, StatusCode},
+    middleware::{self, Next},
+    response::Response,
     routing::{get, post},
     Router,
 };
@@ -21,20 +24,47 @@ pub fn create_routes() -> Router {
         .allow_origin(Any);
 
     Router::new()
+        // Home path /
         .route("/", get(home::home))
+        // example routes
         .nest(
             "/examples",
             Router::new()
                 .route("/test_json", post(examples::test_json))
                 .route("/path_vars/:id", get(examples::path_vars))
                 .route("/query_params", get(examples::query_params))
-                .route("/headers", get(examples::headers)),
+                .route("/headers", get(examples::headers))
+                // Auth Middleware
+                // Isolate route with nest to allow auth middleware only in a scope (Ex. /v1/... or /v2/..)
+                .layer(middleware::from_fn(auth_user)),
         )
+        // Trace layer for logging
         .layer(TraceLayer::new_for_http())
+        // Cors layer
         .layer(cors)
+        // 404 not found fallback
         .fallback(fallback)
 }
 
 async fn fallback() -> (StatusCode, &'static str) {
     (StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND")
+}
+
+#[derive(Clone)]
+struct AuthHeader(String);
+
+async fn auth_user(request: Request, next: Next) -> Result<Response, (StatusCode, &'static str)> {
+    let headers = request.headers();
+
+    let auth_header = headers
+        .get("Authorization")
+        .ok_or_else(|| (StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+
+    let _auth_header = auth_header
+        .to_str()
+        .map_err(|_error| (StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+
+    // some logic here to check if the auth header is a valid JWT token
+
+    Ok(next.run(request).await)
 }
