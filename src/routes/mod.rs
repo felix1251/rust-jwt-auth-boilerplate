@@ -50,17 +50,12 @@ async fn fallback() -> (StatusCode, &'static str) {
     (StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND")
 }
 
-#[derive(Clone)]
-struct AuthHeader(String);
-
 async fn auth_user(request: Request, next: Next) -> Result<Response, (StatusCode, &'static str)> {
     let headers = request.headers();
 
-    let auth_header = headers
+    let _auth_header = headers
         .get("Authorization")
-        .ok_or_else(|| (StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
-
-    let _auth_header = auth_header
+        .ok_or_else(|| (StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
         .to_str()
         .map_err(|_error| (StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
 
