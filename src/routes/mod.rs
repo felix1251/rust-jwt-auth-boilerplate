@@ -36,7 +36,7 @@ pub fn create_routes() -> Router {
                 .route("/headers", get(examples::headers))
                 // Auth Middleware
                 // Isolate route with nest to allow auth middleware only in a scope (Ex. /v1/... or /v2/..)
-                .layer(middleware::from_fn(auth_user)),
+                .route_layer(middleware::from_fn(auth_user)),
         )
         // Trace layer for logging
         .layer(TraceLayer::new_for_http())
