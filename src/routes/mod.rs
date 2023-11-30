@@ -2,26 +2,18 @@ mod examples;
 mod home;
 
 use axum::{
-    http::Method,
     middleware::from_fn,
     routing::{get, post},
     Router,
 };
-use tower_http::{
-    cors::{Any, CorsLayer},
-    trace::TraceLayer,
-};
+use tower_http::trace::TraceLayer;
 
-use crate::middleware::{auth_user, fallback};
+use crate::middleware::{auth_user, cors, fallback};
 
 pub fn create_routes() -> Router {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .init();
-
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST, Method::DELETE])
-        .allow_origin(Any);
 
     Router::new()
         // Home path /
@@ -41,7 +33,7 @@ pub fn create_routes() -> Router {
         // Trace layer for logging
         .layer(TraceLayer::new_for_http())
         // Cors layer
-        .layer(cors)
+        .layer(cors())
         // 404 not found fallback
         .fallback(fallback)
 }
