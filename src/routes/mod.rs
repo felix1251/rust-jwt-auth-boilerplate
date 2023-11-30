@@ -7,18 +7,10 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use serde::{Deserialize, Serialize};
-use tower_http::trace::TraceLayer;
-use utoipa::{OpenApi, ToSchema};
-use utoipa_swagger_ui::SwaggerUi;
 
-#[derive(Debug, Default, Serialize, Deserialize, ToSchema)]
-pub struct Category {
-    pub id: usize,
-    pub name: String,
-    pub url: String,
-    pub icon: String,
-}
+use tower_http::trace::TraceLayer;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(OpenApi)]
 #[openapi(
