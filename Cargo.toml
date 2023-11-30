@@ -20,3 +20,7 @@ validator = { version = "0.16.0", features = ["derive"] }
 tower-http = { version = "0.5.0", features = ["trace", "cors"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Swagger Docs API
+utoipa = { version = "4.1.0", features = ["axum_extras"] }
+utoipa-swagger-ui ={ version = "5.0.0", features = ["axum"] }

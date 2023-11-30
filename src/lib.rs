@@ -1,3 +1,4 @@
+mod middleware;
 mod routes;
 mod utils;
 
