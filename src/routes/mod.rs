@@ -24,7 +24,7 @@ pub struct Category {
 #[openapi(
     info(title = "JWT Auth", description = "JWT Auth boilerplate"),
     paths(home::home),
-    components(schemas(home::HomeRes))
+    components(schemas(home::Home))
 )]
 struct ApiDoc;
 
@@ -52,7 +52,9 @@ pub fn create_routes() -> Router {
         .layer(TraceLayer::new_for_http())
         // Cors layer
         .layer(cors())
-        .merge(SwaggerUi::new("/api/docs").url("/api-doc/openapi.json", ApiDoc::openapi()))
+        .merge(
+            SwaggerUi::new("/api/documentation").url("/api/documentation.json", ApiDoc::openapi()),
+        )
         // 404 not found fallback
         .fallback(fallback)
 }
