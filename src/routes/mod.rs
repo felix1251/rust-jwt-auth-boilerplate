@@ -12,7 +12,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-use crate::middleware::{authenticate_user, fallback};
+use crate::middleware::{auth_user, fallback};
 
 pub fn create_routes() -> Router {
     tracing_subscriber::fmt()
@@ -36,7 +36,7 @@ pub fn create_routes() -> Router {
                 .route("/headers", get(examples::headers))
                 // Auth Middleware
                 // Isolate route with nest to allow auth middleware only in a scope (Ex. /v1/... or /v2/..)
-                .route_layer(from_fn(authenticate_user)),
+                .route_layer(from_fn(auth_user)),
         )
         // Trace layer for logging
         .layer(TraceLayer::new_for_http())

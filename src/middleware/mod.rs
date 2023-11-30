@@ -1,7 +1,7 @@
 use axum::{extract::Request, http::StatusCode, middleware::Next, response::Response, Json};
 use serde_json::{json, Value};
 
-pub async fn authenticate_user(
+pub async fn auth_user(
     request: Request,
     next: Next,
 ) -> Result<Response, (StatusCode, Json<Value>)> {
