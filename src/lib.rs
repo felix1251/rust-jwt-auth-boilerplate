@@ -1,5 +1,5 @@
 mod middleware;
-mod model;
+mod models;
 mod routes;
 mod swagger;
 mod utils;
