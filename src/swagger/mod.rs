@@ -1,7 +1,4 @@
-pub mod schemas;
-
-use crate::routes::home;
-use schemas::home::HomeSchema;
+use crate::routes::home::{self, HomeSchema};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
