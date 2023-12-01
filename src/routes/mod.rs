@@ -19,7 +19,7 @@ pub struct ErrRes {
     pub message: &'static str,
 }
 
-pub fn create_routes(db: DatabaseConnection) -> Router {
+pub async fn create_routes(db: DatabaseConnection) -> Router {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .init();
