@@ -1,10 +1,10 @@
+use super::ErrRes;
 use axum::{
     extract::{Path, Query},
     http::{HeaderMap, StatusCode},
     Json,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct TestJson {
@@ -33,17 +33,17 @@ pub async fn query_params(Query(query): Query<QueryParams>) -> Json<QueryParams>
 }
 
 // Simulate headers (GET /examples/headers)
-pub async fn headers(headers: HeaderMap) -> Result<String, (StatusCode, Json<Value>)> {
+pub async fn headers(headers: HeaderMap) -> Result<String, (StatusCode, Json<ErrRes>)> {
     let header = headers
         .get("x-my-hdr")
         .ok_or_else(|| {
             let status = StatusCode::BAD_REQUEST;
             (
                 status,
-                Json(json!({
-                    "message": "UNAUTHORIZED",
-                    "status": status.as_u16()
-                })),
+                Json(ErrRes {
+                    status: status.as_u16(),
+                    message: "UNAUTHORIZED",
+                }),
             )
         })?
         .to_str();

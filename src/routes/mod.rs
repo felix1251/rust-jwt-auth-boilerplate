@@ -7,10 +7,16 @@ use axum::{
     routing::{get, post},
     Router,
 };
-
+use serde::{Deserialize, Serialize};
 use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+
+#[derive(Serialize, Deserialize)]
+pub struct ErrRes {
+    pub status: u16,
+    pub message: &'static str,
+}
 
 #[derive(OpenApi)]
 #[openapi(

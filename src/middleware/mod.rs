@@ -5,13 +5,14 @@ use axum::{
     response::Response,
     Json,
 };
-use serde_json::{json, Value};
 use tower_http::cors::{Any, CorsLayer};
+
+use crate::routes::ErrRes;
 
 pub async fn auth_user(
     request: Request,
     next: Next,
-) -> Result<Response, (StatusCode, Json<Value>)> {
+) -> Result<Response, (StatusCode, Json<ErrRes>)> {
     let headers = request.headers();
 
     let _auth_header = headers
@@ -20,10 +21,10 @@ pub async fn auth_user(
             let status = StatusCode::UNAUTHORIZED;
             (
                 status,
-                Json(json!({
-                    "message": "UNAUTHORIZED",
-                    "status": status.as_u16()
-                })),
+                Json(ErrRes {
+                    status: status.as_u16(),
+                    message: "UNAUTHORIZED",
+                }),
             )
         })?
         .to_str();
@@ -39,13 +40,13 @@ pub fn cors() -> CorsLayer {
         .allow_origin(Any)
 }
 
-pub async fn fallback() -> Result<(), (StatusCode, Json<Value>)> {
+pub async fn fallback() -> Result<(), (StatusCode, Json<ErrRes>)> {
     let status = StatusCode::NOT_FOUND;
     Err((
         status,
-        Json(json!({
-            "message": "ROUTE_NOT_FOUND",
-            "status": status.as_u16()}
-        )),
+        Json(ErrRes {
+            status: status.as_u16(),
+            message: "ROUTE_NOT_FOUND",
+        }),
     ))
 }
