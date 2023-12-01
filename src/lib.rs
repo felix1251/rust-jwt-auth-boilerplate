@@ -1,10 +1,10 @@
-use sea_orm::Database;
-
 mod middleware;
 mod model;
 mod routes;
 mod swagger;
 mod utils;
+
+use sea_orm::Database;
 
 pub async fn run(db_uri: &str) {
     let db = Database::connect(db_uri).await.unwrap();
