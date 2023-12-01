@@ -27,9 +27,9 @@ DB_PORT=5432
 DB_TEST_NAME=rs_auth_test
 ```
 
-Create a docker container for the local DB
-
 ### Containerize
+
+Create a docker container for the local DB
 
 ```
 docker compose up -d
