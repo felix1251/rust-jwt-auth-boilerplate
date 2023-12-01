@@ -1,3 +1,4 @@
+use crate::routes::ErrRes;
 use axum::{
     extract::Request,
     http::{Method, StatusCode},
@@ -6,8 +7,6 @@ use axum::{
     Json,
 };
 use tower_http::cors::{Any, CorsLayer};
-
-use crate::routes::ErrRes;
 
 pub async fn auth_user(
     request: Request,
