@@ -1,7 +1,8 @@
 mod examples;
-mod home;
+pub mod home;
 
 use crate::middleware::{auth_user, cors, fallback};
+use crate::swagger::swagger_ui;
 use axum::{
     middleware::from_fn,
     routing::{get, post},
@@ -9,22 +10,11 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use tower_http::trace::TraceLayer;
-use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
-
 #[derive(Serialize, Deserialize)]
 pub struct ErrRes {
     pub status: u16,
     pub message: &'static str,
 }
-
-#[derive(OpenApi)]
-#[openapi(
-    info(title = "JWT Auth", description = "JWT Auth boilerplate"),
-    paths(home::home),
-    components(schemas(home::Home))
-)]
-struct ApiDoc;
 
 pub fn create_routes() -> Router {
     tracing_subscriber::fmt()
@@ -50,9 +40,7 @@ pub fn create_routes() -> Router {
         .layer(TraceLayer::new_for_http())
         // Cors layer
         .layer(cors())
-        .merge(
-            SwaggerUi::new("/api/documentation").url("/api/documentation.json", ApiDoc::openapi()),
-        )
+        .merge(swagger_ui())
         // 404 not found fallback
         .fallback(fallback)
 }

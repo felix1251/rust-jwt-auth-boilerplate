@@ -1,5 +1,6 @@
 mod middleware;
 mod routes;
+mod swagger;
 mod utils;
 
 pub async fn run() {
