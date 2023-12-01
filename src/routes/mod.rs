@@ -10,6 +10,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use tower_http::trace::TraceLayer;
+
 #[derive(Serialize, Deserialize)]
 pub struct ErrRes {
     pub status: u16,
