@@ -1,12 +1,12 @@
 pub mod schemas;
-use crate::routes;
+use crate::routes::home;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(OpenApi)]
 #[openapi(
     info(title = "JWT Auth", description = "JWT Auth boilerplate"),
-    paths(routes::home::home),
+    paths(home::home),
     components(schemas(schemas::home::HomeSchema))
 )]
 struct ApiDoc;
