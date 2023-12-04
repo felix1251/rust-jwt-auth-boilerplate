@@ -28,7 +28,7 @@ pub async fn create_routes(db: DatabaseConnection) -> Router {
         .nest(
             "/v1",
             Router::new()
-                .route("/users/me", get(users::me))
+                .nest("/users", Router::new().route("/me", get(users::me)))
                 .route_layer(from_fn(auth_user)),
         )
         // Database Layer
