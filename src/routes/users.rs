@@ -15,7 +15,7 @@ pub struct UserMeSchema {
 
 #[utoipa::path(get, tag = "User", path = "/v1/users/me",
     responses(
-        (status = 200, description = "Current User", body = UserMeSchema ),
+        (status = 200, description = "Current User", body = UserMeSchema),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
     ),
     security(("bearer_auth" = []))
