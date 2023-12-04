@@ -9,7 +9,7 @@ use utoipa::ToSchema;
 #[derive(ToSchema, Serialize)]
 
 pub struct UserMeSchema {
-    #[schema(example = "hi")]
+    #[schema(example = "this is me")]
     message: &'static str,
 }
 
@@ -23,5 +23,7 @@ pub struct UserMeSchema {
 pub async fn me(headers: HeaderMap) -> Result<Json<UserMeSchema>, (StatusCode, Json<ErrRes>)> {
     let _auth_header = headers.get("Authorization").unwrap().to_str();
 
-    Ok(Json(UserMeSchema { message: "me" }))
+    Ok(Json(UserMeSchema {
+        message: "this is me",
+    }))
 }
