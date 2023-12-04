@@ -7,23 +7,21 @@ use serde::Serialize;
 use utoipa::ToSchema;
 
 #[derive(ToSchema, Serialize)]
-#[schema(example = json!({"message": "hi"}))]
+
 pub struct UserMeSchema {
-    message: String,
+    #[schema(example = "hi")]
+    message: &'static str,
 }
 
-#[utoipa::path(
-    get, tag = "User",
-    path = "/v1/users/me",
+#[utoipa::path(get, tag = "User", path = "/v1/users/me",
     responses(
         (status = 200, description = "Current User", body = UserMeSchema ),
-        (status = 401, description = "Unauthenticated", body = UnauthorizedSchema )
-    )
+        (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
+    ),
+    security(("bearer_auth" = []))
 )]
 pub async fn me(headers: HeaderMap) -> Result<Json<UserMeSchema>, (StatusCode, Json<ErrRes>)> {
     let _auth_header = headers.get("Authorization").unwrap().to_str();
 
-    Ok(Json(UserMeSchema {
-        message: "hi".to_owned(),
-    }))
+    Ok(Json(UserMeSchema { message: "me" }))
 }

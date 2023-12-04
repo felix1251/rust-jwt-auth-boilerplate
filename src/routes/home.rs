@@ -3,8 +3,8 @@ use serde::Serialize;
 use utoipa::ToSchema;
 
 #[derive(ToSchema, Serialize)]
-#[schema(example = json!({"message": "This is a health check"}))]
 pub struct HomeSchema {
+    #[schema(example = "This is a health check")]
     message: &'static str,
 }
 
