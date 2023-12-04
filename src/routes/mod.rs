@@ -17,10 +17,6 @@ pub struct ErrRes {
 }
 
 pub async fn create_routes(db: DatabaseConnection) -> Router {
-    tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
-        .init();
-
     Router::new()
         // Home path /
         .route("/", get(home::home))

@@ -40,5 +40,5 @@ struct UnauthorizedSchema {
 }
 
 pub fn swagger_ui() -> SwaggerUi {
-    SwaggerUi::new("/api/documentation").url("/api/documentation.json", ApiDoc::openapi())
+    SwaggerUi::new("/api/docs").url("/api/docs.json", ApiDoc::openapi())
 }
