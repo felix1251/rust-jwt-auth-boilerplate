@@ -44,7 +44,7 @@ pub struct ResponseUser {
     tag = "User",
     path = "/v1/users/sign_in",
     responses(
-        (status = 200, description = "Authenticated", body = ResponseUser),
+        (status = 200, description = "Token Response", body = ResponseUser),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
     )
 )]
