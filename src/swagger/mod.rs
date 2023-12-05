@@ -1,5 +1,5 @@
 use crate::routes::home::{self, HomeSchema};
-use crate::routes::users::{self, UserMeSchema};
+use crate::routes::users::{self, RequestUser, ResponseUser, UserMeSchema};
 use serde::Serialize;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
 use utoipa::{Modify, OpenApi, ToSchema};
@@ -8,8 +8,8 @@ use utoipa_swagger_ui::SwaggerUi;
 #[derive(OpenApi)]
 #[openapi(
     info(title = "JWT Auth", description = "JWT Auth boilerplate"),
-    paths(home::home, users::me),
-    components(schemas(HomeSchema, UserMeSchema, UnauthorizedSchema)),
+    paths(home::home, users::me, users::sign_in),
+    components(schemas(HomeSchema, UserMeSchema, UnauthorizedSchema, RequestUser, ResponseUser)),
     modifiers(&SecurityAddon)
 )]
 struct ApiDoc;
@@ -33,7 +33,7 @@ impl Modify for SecurityAddon {
 
 #[derive(ToSchema, Serialize)]
 struct UnauthorizedSchema {
-    #[schema(example = 400)]
+    #[schema(example = 401)]
     pub status: u16,
     #[schema(example = "UNAUTHORIZED")]
     pub message: String,

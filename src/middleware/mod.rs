@@ -1,31 +1,18 @@
-use crate::routes::ErrRes;
+use crate::utils::app_error::AppError;
 use axum::{
     extract::Request,
     http::{Method, StatusCode},
     middleware::Next,
     response::Response,
-    Json,
 };
 use tower_http::cors::{Any, CorsLayer};
 
-pub async fn auth_user(
-    request: Request,
-    next: Next,
-) -> Result<Response, (StatusCode, Json<ErrRes>)> {
+pub async fn auth_user(request: Request, next: Next) -> Result<Response, AppError> {
     let headers = request.headers();
 
     let _auth_header = headers
         .get("Authorization")
-        .ok_or_else(|| {
-            let status = StatusCode::UNAUTHORIZED;
-            (
-                status,
-                Json(ErrRes {
-                    status: status.as_u16(),
-                    message: "UNAUTHORIZED",
-                }),
-            )
-        })?
+        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
         .to_str();
 
     // some logic here to check if the auth header is a valid JWT token
@@ -39,13 +26,6 @@ pub fn cors() -> CorsLayer {
         .allow_origin(Any)
 }
 
-pub async fn fallback() -> Result<(), (StatusCode, Json<ErrRes>)> {
-    let status = StatusCode::NOT_FOUND;
-    Err((
-        status,
-        Json(ErrRes {
-            status: status.as_u16(),
-            message: "ROUTE_NOT_FOUND",
-        }),
-    ))
+pub async fn fallback() -> Result<(), AppError> {
+    Err(AppError::new(StatusCode::NOT_FOUND, "NOT_FOUND"))
 }
