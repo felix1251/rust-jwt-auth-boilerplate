@@ -1,4 +1,3 @@
-mod examples;
 pub mod home;
 pub mod users;
 
@@ -17,16 +16,17 @@ pub async fn create_routes(db: DatabaseConnection) -> Router {
     Router::new()
         // Home path /
         .route("/", get(home::home))
-        // users routes
         .nest(
             "/v1",
-            Router::new().nest(
-                "/users",
-                Router::new()
-                    .route("/me", get(users::me))
-                    .route_layer(from_fn(auth_user))
-                    .route("/sign_in", post(users::sign_in)),
-            ),
+            Router::new()
+                // users routes
+                .nest(
+                    "/users",
+                    Router::new()
+                        .route("/me", get(users::me))
+                        .route_layer(from_fn(auth_user))
+                        .route("/sign_in", post(users::sign_in)),
+                ),
         )
         // Database Layer
         .layer(Extension(db))
