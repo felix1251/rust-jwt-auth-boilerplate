@@ -8,7 +8,7 @@
     -   [x] Swagger API Inspector
 
 ```md
-Folder Structure
+rust-jwt-auth-boilerplate
 ├── src
 │ ├── database
 │ ├── middleware
