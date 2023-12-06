@@ -75,7 +75,7 @@ sea-orm-cli migrate fresh
 Generate Enitity
 
 ```
-sea-orm-cli generate entity -o ./src/models -t user
+sea-orm-cli generate entity -o ./src/models
 ```
 
 ### Own Git repository
