@@ -18,10 +18,12 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(User::Uuid).uuid().not_null())
+                    .col(ColumnDef::new(User::Uuid).uuid().unique_key().not_null())
                     .col(ColumnDef::new(User::Fullname).string().not_null())
                     .col(ColumnDef::new(User::Email).string().not_null())
                     .col(ColumnDef::new(User::EncryptedPassword).string().not_null())
+                    .col(ColumnDef::new(User::CreatedAt).date_time().not_null())
+                    .col(ColumnDef::new(User::UpdatedAt).date_time().not_null())
                     .to_owned(),
             )
             .await
@@ -42,4 +44,6 @@ enum User {
     Fullname,
     Email,
     EncryptedPassword,
+    CreatedAt,
+    UpdatedAt,
 }
