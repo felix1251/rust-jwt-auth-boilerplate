@@ -70,13 +70,13 @@ cargo install sea-orm-cli
 Run Migration
 
 ```
-sea-orm-cli migrate
+sea-orm-cli migrate -d ./src/database/migration
 ```
 
 Fresh Migration
 
 ```
-sea-orm-cli migrate fresh
+sea-orm-cli migrate -d ./src/database/migration fresh
 ```
 
 ### Models/Entity
