@@ -1,10 +1,9 @@
+mod database;
 mod middleware;
 mod models;
 mod routes;
 mod swagger;
 mod utils;
-
-use sea_orm::Database;
 
 pub async fn run(db_uri: &str) {
     tracing_subscriber::fmt()
@@ -12,7 +11,7 @@ pub async fn run(db_uri: &str) {
         .init();
 
     tracing::debug!("Connecting to DB");
-    let db = Database::connect(db_uri).await.unwrap();
+    let db = database::init(db_uri).await;
     tracing::debug!("DB Connected");
 
     let services = routes::create_routes(db).await;
