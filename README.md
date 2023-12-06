@@ -4,7 +4,7 @@
     -   [x] Axum (Routing, Middleware, etc..)
     -   [x] JsonWebToken
     -   [x] PostgreSQL
-    -   [x] SeaORM
+    -   [x] SeaORM (Model, Migration)
     -   [x] Swagger API Inspector
 
 ## Setup Dev Environment
