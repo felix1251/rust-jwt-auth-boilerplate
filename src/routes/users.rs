@@ -1,4 +1,7 @@
-use crate::utils::{app_error::AppError, jwt::create_jwt};
+use crate::utils::{
+    app_error::AppError,
+    jwt::{create_jwt, Tokens},
+};
 
 use axum::{http::HeaderMap, Json};
 use serde::{Deserialize, Serialize};
@@ -35,26 +38,18 @@ pub struct RequestUser {
     id: u32,
 }
 
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct ResponseUser {
-    #[schema(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.....")]
-    token: String,
-}
-
 #[utoipa::path(
     post,
     request_body = RequestUser,
     tag = "User",
     path = "/v1/users/sign_in",
     responses(
-        (status = 200, description = "Token Response", body = ResponseUser),
+        (status = 200, description = "Token Response", body = Tokens),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
     )
 )]
-pub async fn sign_in(
-    Json(request_user): Json<RequestUser>,
-) -> Result<Json<ResponseUser>, AppError> {
+pub async fn sign_in(Json(request_user): Json<RequestUser>) -> Result<Json<Tokens>, AppError> {
     let token = create_jwt(request_user.id)?;
 
-    Ok(Json(ResponseUser { token }))
+    Ok(Json(token))
 }
