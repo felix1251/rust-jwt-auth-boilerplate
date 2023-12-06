@@ -16,7 +16,7 @@ git clone https://github.com/felix1251/rust-jwt-auth-boilerplate.git <project-na
 cd <project-name>
 ```
 
-### Setup ENV variables
+### ENV variables
 
 Create a .env file
 
