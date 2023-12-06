@@ -22,6 +22,7 @@ Folder Structure
 ├── .env
 ├── .gitignore
 ├── Cargo.lock
+├── Cargo.toml
 ├── docker-compose.yml
 └── README.md
 ```
