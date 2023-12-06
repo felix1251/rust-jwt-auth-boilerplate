@@ -76,6 +76,14 @@ Fresh Migration
 sea-orm-cli migrate fresh
 ```
 
+### Models/Entity
+
+Generate Enitity
+
+```
+sea-orm-cli generate entity -o ./src/models -t user
+```
+
 ### Own Git repository
 
 Remove git folder, so you can add it to your own repo later.
