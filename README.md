@@ -1,12 +1,5 @@
 # Rust JWT Authentication Boilerplate
 
--   ### Features
-    -   [x] Axum (Routing, Middleware, etc..)
-    -   [x] JsonWebToken
-    -   [x] PostgreSQL
-    -   [x] SeaORM (Model, Migration)
-    -   [x] Swagger API Inspector
-
 ```md
 rust-jwt-auth-boilerplate
 ├── src
@@ -26,6 +19,14 @@ rust-jwt-auth-boilerplate
 ├── docker-compose.yml
 └── README.md
 ```
+
+### Features
+
+-   [x] Axum (Routing, Middleware, etc..)
+-   [x] JsonWebToken
+-   [x] PostgreSQL
+-   [x] SeaORM (Model, Migration)
+-   [x] Swagger API Inspector
 
 ## Setup Dev Environment
 
