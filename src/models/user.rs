@@ -7,6 +7,7 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
+    pub uuid: Uuid,
     pub fullname: String,
     pub email: String,
     pub encrypted_password: String,
