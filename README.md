@@ -36,12 +36,6 @@ Create a docker container for the local DB
 docker compose up -d
 ```
 
-### Build
-
-```
-cargo build
-```
-
 ### Run App Locally
 
 Make sure cargo watch installed (if not installed)
