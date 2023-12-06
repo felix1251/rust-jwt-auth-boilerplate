@@ -11,7 +11,10 @@ pub struct UserMeSchema {
     message: &'static str,
 }
 
-#[utoipa::path(get, tag = "User", path = "/v1/users/me",
+#[utoipa::path(
+    get,
+    tag = "User",
+    path = "/v1/users/me",
     responses(
         (status = 200, description = "Current User", body = UserMeSchema),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
@@ -39,8 +42,8 @@ pub struct ResponseUser {
 }
 
 #[utoipa::path(
-    request_body = RequestUser,
     post,
+    request_body = RequestUser,
     tag = "User",
     path = "/v1/users/sign_in",
     responses(
