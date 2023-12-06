@@ -23,6 +23,9 @@ DB_NAME=rs_auth_db
 DB_PASSWORD=password
 DB_HOST=localhost
 DB_PORT=5432
+DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+JWT_SECRET=secret
+
 ```
 
 ### Containerize
@@ -51,6 +54,26 @@ Run
 
 ```
 cargo watch -x run
+```
+
+### Migration
+
+Install CLI
+
+```
+cargo install sea-orm-cli
+```
+
+Run Migration
+
+```
+sea-orm-cli migrate
+```
+
+Fresh Migration
+
+```
+sea-orm-cli migrate fresh
 ```
 
 ### Own Git repository
