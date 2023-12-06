@@ -1,5 +1,11 @@
 ## Rust JWT Authentication Boilerplate
 
+-   Features
+    -   [x] Axum (Routing, Middleware, etc..)
+    -   [x] JsonWebToken
+    -   [x] PostgreSQL
+    -   [x] SeaORM
+
 Clone Repository
 
 ```
