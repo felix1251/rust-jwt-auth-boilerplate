@@ -21,7 +21,7 @@ impl IntoResponse for AppError {
             self.code,
             Json(ErrorResponse {
                 status: self.code.as_u16(),
-                error: self.message.clone(),
+                error: self.message,
             }),
         )
             .into_response()
