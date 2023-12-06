@@ -7,6 +7,25 @@
     -   [x] SeaORM (Model, Migration)
     -   [x] Swagger API Inspector
 
+```md
+Folder Structure
+├── src
+│ ├── database
+│ ├── middleware
+│ ├── models
+│ ├── routes
+│ ├── swagger
+│ ├── test
+│ ├── utils
+│ ├── lib.rs
+│ └── main.rs
+├── .env
+├── .gitignore
+├── Cargo.lock
+├── docker-compose.yml
+└── README.md
+```
+
 ## Setup Dev Environment
 
 Clone Repository
