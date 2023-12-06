@@ -5,6 +5,7 @@
     -   [x] JsonWebToken
     -   [x] PostgreSQL
     -   [x] SeaORM
+    -   [x] Swagger API Inspector
 
 ## Setup Dev Environment
 
