@@ -33,8 +33,7 @@ pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
 
     let claim = Claims { id, exp, iat };
     let secret = dotenv!("JWT_TOKEN_SECRET");
-    let key = EncodingKey::from_secret(secret.as_bytes());
-    let token = encode_token(claim, key)?;
+    let token = encode_token(claim, secret)?;
 
     // Refresh Token
     let expires_in = now + Duration::days(2);
@@ -42,8 +41,7 @@ pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
 
     let claim = Claims { id, exp, iat };
     let secret = dotenv!("JWT_TOKEN_SECRET");
-    let key = EncodingKey::from_secret(secret.as_bytes());
-    let refresh_token = encode_token(claim, key)?;
+    let refresh_token = encode_token(claim, secret)?;
 
     Ok(Tokens {
         token,
@@ -51,7 +49,9 @@ pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
     })
 }
 
-fn encode_token(claim: Claims, key: EncodingKey) -> Result<String, AppError> {
+fn encode_token(claim: Claims, secret: &str) -> Result<String, AppError> {
+    let key = EncodingKey::from_secret(secret.as_bytes());
+
     encode(&Header::default(), &claim, &key)
         .map_err(|_err| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
 }
