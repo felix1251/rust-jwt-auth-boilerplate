@@ -1,5 +1,4 @@
 use crate::models::users::Entity as Users;
-use crate::routes::users::CurrentUser;
 use crate::utils::{app_error::AppError, jwt::decode_token};
 use axum::extract::State;
 use axum::http::HeaderMap;
@@ -26,18 +25,12 @@ pub async fn auth_user(
     let secret = dotenv!("JWT_TOKEN_SECRET");
     let decoded_token = decode_token(token, secret)?;
 
-    let user = Users::find_by_id(decoded_token.id)
+    let current_user = Users::find_by_id(decoded_token.id)
         .one(&db)
         .await
         .unwrap()
         .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
 
-    let current_user = CurrentUser {
-        id: user.id,
-        uuid: user.uuid,
-        fullname: user.fullname,
-        email: user.email,
-    };
     request.extensions_mut().insert(current_user);
 
     Ok(next.run(request).await).into()

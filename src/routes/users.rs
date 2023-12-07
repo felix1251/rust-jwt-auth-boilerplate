@@ -1,6 +1,9 @@
-use crate::utils::{
-    app_error::AppError,
-    jwt::{create_jwt, Tokens},
+use crate::{
+    models::users,
+    utils::{
+        app_error::AppError,
+        jwt::{create_jwt, Tokens},
+    },
 };
 use axum::Extension;
 use axum::Json;
@@ -29,9 +32,16 @@ pub struct CurrentUser {
     security(("bearer_auth" = []))
 )]
 pub async fn me(
-    Extension(current_user): Extension<CurrentUser>,
+    Extension(current_user): Extension<users::Model>,
 ) -> Result<Json<CurrentUser>, AppError> {
-    Ok(Json(current_user))
+    let me = CurrentUser {
+        id: current_user.id,
+        uuid: current_user.uuid,
+        fullname: current_user.fullname,
+        email: current_user.email,
+    };
+
+    Ok(Json(me))
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
