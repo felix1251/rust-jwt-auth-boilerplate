@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 #[derive(ToSchema, Serialize, Clone)]
-
 pub struct CurrentUser {
     #[schema(example = 1)]
     pub id: i32,
