@@ -1,23 +1,52 @@
-use crate::utils::app_error::AppError;
+use crate::models::users::Entity as Users;
+use crate::routes::users::ResponseUser;
+use crate::utils::{app_error::AppError, jwt::decode_token};
+use axum::extract::State;
 use axum::{
     extract::Request,
     http::{Method, StatusCode},
     middleware::Next,
     response::Response,
 };
+use dotenvy_macro::dotenv;
+use sea_orm::{DatabaseConnection, EntityTrait};
 use tower_http::cors::{Any, CorsLayer};
 
-pub async fn auth_user(request: Request, next: Next) -> Result<Response, AppError> {
+pub async fn auth_user(
+    State(db): State<DatabaseConnection>,
+    mut request: Request,
+    next: Next,
+) -> Result<Response, AppError> {
     let headers = request.headers();
 
-    let _auth_header = headers
+    let auth_header = headers
         .get("Authorization")
         .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .to_str();
+        .to_str()
+        .unwrap();
 
-    // some logic here to check if the auth header is a valid JWT token
+    let token = auth_header
+        .strip_prefix("Bearer ")
+        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
 
-    Ok(next.run(request).await)
+    let secret = dotenv!("JWT_TOKEN_SECRET");
+    let decoded_value = decode_token(token, secret)?;
+
+    let user = Users::find_by_id(decoded_value.id).one(&db).await.unwrap();
+
+    match user {
+        Some(u) => {
+            request.extensions_mut().insert(ResponseUser {
+                id: u.id,
+                uuid: u.uuid,
+                fullname: u.fullname,
+                email: u.email,
+            });
+
+            Ok(next.run(request).await)
+        }
+        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+    }
 }
 
 pub fn cors() -> CorsLayer {

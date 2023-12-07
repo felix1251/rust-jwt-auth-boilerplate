@@ -1,5 +1,5 @@
 use crate::routes::home::{self, HomeSchema};
-use crate::routes::users::{self, RequestUser, UserMeSchema};
+use crate::routes::users::{self, RequestUser, ResponseUser};
 use crate::utils::jwt::Tokens;
 use serde::Serialize;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
@@ -10,7 +10,15 @@ use utoipa_swagger_ui::SwaggerUi;
 #[openapi(
     info(title = "JWT Auth", description = "JWT Auth boilerplate"),
     paths(home::home, users::me, users::sign_in),
-    components(schemas(HomeSchema, UserMeSchema, UnauthorizedSchema, RequestUser, Tokens)),
+    components(
+        schemas(
+            HomeSchema,
+            UnauthorizedSchema,
+            ResponseUser,
+            RequestUser,
+            Tokens
+        )
+    ),
     modifiers(&SecurityAddon)
 )]
 struct ApiDoc;
