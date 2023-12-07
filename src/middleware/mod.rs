@@ -30,9 +30,9 @@ pub async fn auth_user(
         .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
 
     let secret = dotenv!("JWT_TOKEN_SECRET");
-    let decoded_value = decode_token(token, secret)?;
+    let decoded_token = decode_token(token, secret)?;
 
-    let user = Users::find_by_id(decoded_value.id).one(&db).await.unwrap();
+    let user = Users::find_by_id(decoded_token.id).one(&db).await.unwrap();
 
     match user {
         Some(u) => {
