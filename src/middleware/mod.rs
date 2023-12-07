@@ -2,6 +2,7 @@ use crate::models::users::Entity as Users;
 use crate::routes::users::CurrentUser;
 use crate::utils::{app_error::AppError, jwt::decode_token};
 use axum::extract::State;
+use axum::http::HeaderMap;
 use axum::{
     extract::Request,
     http::{Method, StatusCode},
@@ -19,15 +20,8 @@ pub async fn auth_user(
 ) -> Result<Response, AppError> {
     let headers = request.headers();
 
-    let auth_header = headers
-        .get("Authorization")
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?
-        .to_str()
-        .unwrap();
-
-    let token = auth_header
-        .strip_prefix("Bearer ")
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+    let auth_header = get_auth_header(headers)?;
+    let token = strip_auth_header(auth_header)?;
 
     let secret = dotenv!("JWT_TOKEN_SECRET");
     let decoded_token = decode_token(token, secret)?;
@@ -47,6 +41,24 @@ pub async fn auth_user(
     request.extensions_mut().insert(current_user);
 
     Ok(next.run(request).await).into()
+}
+
+pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
+    let auth_header = headers.get("Authorization");
+
+    match auth_header {
+        Some(token) => Ok(token.to_str().unwrap()),
+        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+    }
+}
+
+pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
+    let token = auth_header.strip_prefix("Bearer ");
+
+    match token {
+        Some(token) => Ok(token),
+        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+    }
 }
 
 pub fn cors() -> CorsLayer {
