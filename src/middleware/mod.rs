@@ -27,5 +27,5 @@ pub fn cors() -> CorsLayer {
 }
 
 pub async fn fallback() -> Result<(), AppError> {
-    Err(AppError::new(StatusCode::NOT_FOUND, "NOT_FOUND"))
+    Err(AppError::new(StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"))
 }
