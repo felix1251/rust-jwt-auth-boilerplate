@@ -32,9 +32,7 @@ pub struct CurrentUser {
     ),
     security(("bearer_auth" = []))
 )]
-pub async fn me(
-    Extension(current_user): Extension<users::Model>,
-) -> Result<Json<CurrentUser>, AppError> {
+pub async fn me(Extension(current_user): Extension<users::Model>) -> Result<Json<CurrentUser>, ()> {
     let me = CurrentUser {
         id: current_user.id,
         uuid: current_user.uuid,
