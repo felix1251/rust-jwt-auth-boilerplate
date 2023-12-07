@@ -9,12 +9,13 @@ use axum::Extension;
 use axum::Json;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 #[derive(ToSchema, Serialize, Clone)]
 pub struct CurrentUser {
     #[schema(example = 1)]
     pub id: i32,
-    pub uuid: String,
+    pub uuid: Uuid,
     #[schema(example = "John Doe")]
     pub fullname: String,
     #[schema(example = "john_doe@email.com")]

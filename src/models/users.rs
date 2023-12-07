@@ -8,13 +8,13 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     #[sea_orm(unique)]
-    pub uuid: String,
+    pub uuid: Uuid,
     pub fullname: String,
     #[sea_orm(unique)]
     pub email: String,
     pub encrypted_password: String,
-    pub created_at: DateTime,
-    pub updated_at: DateTime,
+    pub created_at: DateTimeWithTimeZone,
+    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
