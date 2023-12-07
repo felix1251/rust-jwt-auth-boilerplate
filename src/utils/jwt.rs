@@ -28,7 +28,7 @@ pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
     let iat = now.timestamp() as usize;
 
     // Token
-    let expires_in = now + Duration::seconds(30);
+    let expires_in = now + Duration::hours(3);
     let exp = expires_in.timestamp() as usize;
 
     let claim = Claims { id, exp, iat };
@@ -40,7 +40,7 @@ pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
     let exp = expires_in.timestamp() as usize;
 
     let claim = Claims { id, exp, iat };
-    let secret = dotenv!("JWT_TOKEN_SECRET");
+    let secret = dotenv!("JWT_REFRESH_TOKEN_SECRET");
     let refresh_token = encode_token(claim, secret)?;
 
     Ok(Tokens {
