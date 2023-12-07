@@ -36,12 +36,13 @@ pub async fn auth_user(
 
     match user {
         Some(u) => {
-            request.extensions_mut().insert(ResponseUser {
+            let current_user = ResponseUser {
                 id: u.id,
                 uuid: u.uuid,
                 fullname: u.fullname,
                 email: u.email,
-            });
+            };
+            request.extensions_mut().insert(current_user);
 
             Ok(next.run(request).await)
         }
