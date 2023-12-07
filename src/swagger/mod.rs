@@ -1,5 +1,5 @@
 use crate::routes::home::{self, HomeSchema};
-use crate::routes::users::{self, RequestUser, ResponseUser};
+use crate::routes::users::{self, CurrentUser, RequestUser};
 use crate::utils::jwt::Tokens;
 use serde::Serialize;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
@@ -14,7 +14,7 @@ use utoipa_swagger_ui::SwaggerUi;
         schemas(
             HomeSchema,
             UnauthorizedSchema,
-            ResponseUser,
+            CurrentUser,
             RequestUser,
             Tokens
         )

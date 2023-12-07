@@ -1,5 +1,5 @@
 use crate::models::users::Entity as Users;
-use crate::routes::users::ResponseUser;
+use crate::routes::users::CurrentUser;
 use crate::utils::{app_error::AppError, jwt::decode_token};
 use axum::extract::State;
 use axum::{
@@ -32,22 +32,21 @@ pub async fn auth_user(
     let secret = dotenv!("JWT_TOKEN_SECRET");
     let decoded_token = decode_token(token, secret)?;
 
-    let user = Users::find_by_id(decoded_token.id).one(&db).await.unwrap();
+    let user = Users::find_by_id(decoded_token.id)
+        .one(&db)
+        .await
+        .unwrap()
+        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
 
-    match user {
-        Some(u) => {
-            let current_user = ResponseUser {
-                id: u.id,
-                uuid: u.uuid,
-                fullname: u.fullname,
-                email: u.email,
-            };
-            request.extensions_mut().insert(current_user);
+    let current_user = CurrentUser {
+        id: user.id,
+        uuid: user.uuid,
+        fullname: user.fullname,
+        email: user.email,
+    };
+    request.extensions_mut().insert(current_user);
 
-            Ok(next.run(request).await)
-        }
-        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
-    }
+    Ok(next.run(request).await).into()
 }
 
 pub fn cors() -> CorsLayer {

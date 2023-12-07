@@ -9,7 +9,7 @@ use utoipa::ToSchema;
 
 #[derive(ToSchema, Serialize, Clone)]
 
-pub struct ResponseUser {
+pub struct CurrentUser {
     #[schema(example = 1)]
     pub id: i32,
     pub uuid: String,
@@ -24,14 +24,14 @@ pub struct ResponseUser {
     tag = "User",
     path = "/v1/users/me",
     responses(
-        (status = 200, description = "Current User", body = ResponseUser),
+        (status = 200, description = "Current User", body = CurrentUser),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
     ),
     security(("bearer_auth" = []))
 )]
 pub async fn me(
-    Extension(current_user): Extension<ResponseUser>,
-) -> Result<Json<ResponseUser>, AppError> {
+    Extension(current_user): Extension<CurrentUser>,
+) -> Result<Json<CurrentUser>, AppError> {
     Ok(Json(current_user))
 }
 
