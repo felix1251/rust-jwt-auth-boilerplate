@@ -43,7 +43,7 @@ pub async fn auth_user(
     Ok(next.run(request).await).into()
 }
 
-pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
+fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
     let auth_header = headers.get("Authorization");
 
     match auth_header {
@@ -52,7 +52,7 @@ pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
     }
 }
 
-pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
+fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
     let token = auth_header.strip_prefix("Bearer ");
 
     match token {
