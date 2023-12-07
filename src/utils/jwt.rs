@@ -60,9 +60,7 @@ pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
     let key = DecodingKey::from_secret(secret.as_bytes());
 
     let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))
-        .map_err(|_err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
-        })?;
+        .map_err(|_err| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
 
     Ok(decoded_token.claims)
 }
