@@ -3,9 +3,8 @@ pub mod users;
 
 use crate::middleware::{auth_user, cors, fallback};
 use crate::swagger::swagger_ui;
-use axum::Extension;
+use axum::middleware::from_fn_with_state;
 use axum::{
-    middleware::from_fn,
     routing::{get, post},
     Router,
 };
@@ -24,12 +23,12 @@ pub async fn create_routes(db: DatabaseConnection) -> Router {
                     "/users",
                     Router::new()
                         .route("/me", get(users::me))
-                        .route_layer(from_fn(auth_user))
+                        .route_layer(from_fn_with_state(db.clone(), auth_user))
                         .route("/sign_in", post(users::sign_in)),
                 ),
         )
         // Database Layer
-        .layer(Extension(db))
+        .with_state(db)
         // Trace layer for logging
         .layer(TraceLayer::new_for_http())
         // Cors layer
