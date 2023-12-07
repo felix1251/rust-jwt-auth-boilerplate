@@ -1,18 +1,18 @@
 use axum::http::StatusCode;
 use chrono::{Duration, Utc};
 use dotenvy_macro::dotenv;
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 use super::app_error::AppError;
 
 /// Our claims struct, it needs to derive `Serialize` and/or `Deserialize`
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
-    id: u32,    // ID of the user
-    exp: usize, // Expiration time (as UTC timestamp)
-    iat: usize, // Issued at (as UTC timestamp)
+    pub id: i32,    // ID of the user
+    pub exp: usize, // Expiration time (as UTC timestamp)
+    pub iat: usize, // Issued at (as UTC timestamp)
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
@@ -23,7 +23,7 @@ pub struct Tokens {
     refresh_token: String,
 }
 
-pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
+pub fn create_jwt(id: i32) -> Result<Tokens, AppError> {
     let now = Utc::now();
     let iat = now.timestamp() as usize;
 
@@ -49,11 +49,22 @@ pub fn create_jwt(id: u32) -> Result<Tokens, AppError> {
     })
 }
 
-fn encode_token(claim: Claims, secret: &str) -> Result<String, AppError> {
+pub fn encode_token(claim: Claims, secret: &str) -> Result<String, AppError> {
     let key = EncodingKey::from_secret(secret.as_bytes());
 
     encode(&Header::default(), &claim, &key)
         .map_err(|_err| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
+}
+
+pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
+    let key = DecodingKey::from_secret(secret.as_bytes());
+
+    let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))
+        .map_err(|_err| {
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
+        })?;
+
+    Ok(decoded_token.claims)
 }
 
 // pub fn is_valid() -> Result<bool, StatusCode> {
