@@ -1,3 +1,4 @@
+use crate::routes::auth;
 use crate::routes::home;
 use crate::routes::users;
 use crate::utils::jwt;
@@ -13,7 +14,9 @@ use utoipa_swagger_ui::SwaggerUi;
         home::home,
         // users
         users::handlers::me,
-        users::handlers::sign_in),
+        // auths
+        auth::handlers::sign_in
+    ),
     components(
         schemas(
             UnauthorizedSchema,
@@ -21,7 +24,8 @@ use utoipa_swagger_ui::SwaggerUi;
             home::HomeSchema,
             // users
             users::handlers::CurrentUser,
-            users::handlers::RequestUser,
+            // auth
+            auth::handlers::RequestUser,
 
         )
     ),

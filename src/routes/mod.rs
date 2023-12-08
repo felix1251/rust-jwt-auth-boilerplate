@@ -1,3 +1,4 @@
+pub mod auth;
 pub mod home;
 pub mod users;
 
@@ -11,13 +12,10 @@ pub async fn create_routes(db: DatabaseConnection) -> Router {
     Router::new()
         // Home path /
         .route("/", get(home::home))
-        .nest(
-            "/v1",
-            Router::new()
-                // users routes
-                .nest("/users", users::routes(db.clone())),
-        )
-        // Database Layer
+        // users routes
+        .nest("/users", users::routes(db.clone()))
+        // auth routes
+        .nest("/auth", auth::routes(db))
         // Trace layer for logging
         .layer(TraceLayer::new_for_http())
         // Cors layer
