@@ -26,7 +26,6 @@ use utoipa_swagger_ui::SwaggerUi;
             users::handlers::CurrentUser,
             // auth
             auth::handlers::RequestUser,
-
         )
     ),
     modifiers(&SecurityAddon)
