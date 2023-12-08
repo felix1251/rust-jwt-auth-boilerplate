@@ -2,3 +2,4 @@
 .env
 /src/database/migration/target
 /.vscode
+/src/models_temp
