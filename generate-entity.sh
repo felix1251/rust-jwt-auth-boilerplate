@@ -12,7 +12,7 @@ do
   fi
 
   # Append to models mod.rs
-  if ! grep -q "pub mod $table;" "./src/models/mod.rs"; then
+  if test -f ./src/models/$table.rs && ! grep -q "pub mod $table;" "./src/models/mod.rs"; then
     echo "pub mod $table;" >> ./src/models/mod.rs
   else
     echo "models/mod.rs -> "$1" line already exists"
@@ -20,7 +20,7 @@ do
 
   # Append to models prelude.rs
   toCamelCase=`echo $table | sed -r 's/(^|_)([a-z])/\U\2/g'`
-  if ! grep -q "pub use super::$table::Entity as $toCamelCase;" "./src/models/prelude.rs"; then
+  if test -f ./src/models/$table.rs && ! grep -q "pub use super::$table::Entity as $toCamelCase;" "./src/models/prelude.rs"; then
     echo "pub use super::$table::Entity as $toCamelCase;" >> ./src/models/prelude.rs
   else
     echo "models/prelude.rs -> "$toCamelCase" line already exists"
