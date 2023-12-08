@@ -1,6 +1,6 @@
-use crate::routes::home::{self, HomeSchema};
-use crate::routes::users::{self, CurrentUser, RequestUser};
-use crate::utils::jwt::Tokens;
+use crate::routes::home;
+use crate::routes::users;
+use crate::utils::jwt;
 use serde::Serialize;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
 use utoipa::{Modify, OpenApi, ToSchema};
@@ -9,14 +9,20 @@ use utoipa_swagger_ui::SwaggerUi;
 #[derive(OpenApi)]
 #[openapi(
     info(title = "JWT Auth", description = "JWT Auth boilerplate"),
-    paths(home::home, users::me, users::sign_in),
+    paths(
+        home::home,
+        // users
+        users::handlers::me,
+        users::handlers::sign_in),
     components(
         schemas(
-            HomeSchema,
             UnauthorizedSchema,
-            CurrentUser,
-            RequestUser,
-            Tokens
+            jwt::Tokens,
+            home::HomeSchema,
+            // users
+            users::handlers::CurrentUser,
+            users::handlers::RequestUser,
+
         )
     ),
     modifiers(&SecurityAddon)

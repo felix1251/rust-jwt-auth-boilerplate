@@ -1,9 +1,7 @@
-use crate::{
-    models::users,
-    utils::{
-        app_error::AppError,
-        jwt::{create_jwt, Tokens},
-    },
+use crate::models::users;
+use crate::utils::{
+    app_error::AppError,
+    jwt::{create_jwt, Tokens},
 };
 use axum::Extension;
 use axum::Json;
