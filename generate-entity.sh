@@ -7,25 +7,23 @@ do
   if ! test -f ./src/models/$table.rs; then
     # Copy to models
     cp -i ./src/models_temp/$table.rs ./src/models
-
-    # Append to models mod.rs
-    textToAppedMod="pub mod $table;"
-    if ! grep -q "$textToApped1" "./src/models/mod.rs"; then
-      echo $textToApped1 >> ./src/models/mod.rs
-    else
-      echo "mod.rs -> line already exists"
-    fi
-
-    # Append to models prelude.rs
-    toCamelCase=`echo $table | sed -r 's/(^|_)([a-z])/\U\2/g'`
-    textToAppedPrelude="pub use super::$table::Entity as $toCamelCase;"
-    if ! grep -q "$textToApped1" "./src/models/mod.rs"; then
-      echo $textToAppedPrelude >> ./src/models/prelude.rs
-    else
-      echo "prelude.rs -> line already exists"
-    fi
   else
-    echo "file already exist"
+    echo "models/$1.rs -> file already exist"
+  fi
+
+  # Append to models mod.rs
+  if ! grep -q "pub mod $table;" "./src/models/mod.rs"; then
+    echo "pub mod $table;" >> ./src/models/mod.rs
+  else
+    echo "models/mod.rs -> "$1" line already exists"
+  fi
+
+  # Append to models prelude.rs
+  toCamelCase=`echo $table | sed -r 's/(^|_)([a-z])/\U\2/g'`
+  if ! grep -q "pub use super::$table::Entity as $toCamelCase;" "./src/models/prelude.rs"; then
+    echo "pub use super::$table::Entity as $toCamelCase;" >> ./src/models/prelude.rs
+  else
+    echo "models/prelude.rs -> "$toCamelCase" line already exists"
   fi
 
   # Delete temporary models file
