@@ -118,7 +118,7 @@ Alternative (Using Bash)
 > I created a bash file to generate entity without rewriting models files.
 
 ```bash
-bash generate-single-entity.sh TABLE_NAME_1 TABLE_NAME_2
+bash generate-entity.sh TABLE_NAME_1 TABLE_NAME_2
 # Ex. $ bash generate-entity.sh users tasks
 ```
 
