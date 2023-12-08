@@ -27,7 +27,7 @@ do
       echo "models/prelude.rs -> "$toCamelCase" line already exists"
     fi
   fi
-
-  # Delete temporary models file
-  rm -rf ./src/models_temp
 done
+
+# Delete temporary models file
+rm -rf ./src/models_temp
