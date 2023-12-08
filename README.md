@@ -104,9 +104,11 @@ sea-orm-cli migrate -d ./src/database/migration fresh
 
 Generate Enitity
 
-**SeaORM rewrites the files every time we generate entity**
-**You might have written ActiveModelBehavior for the model and we don't want it to be removed**
-**Grab the generated entity in models_temp folder and move to models folder**
+<sub><sup>SeaORM rewrites the files every time we generate entity</sub></sup>
+
+<sub><sup>You might have written ActiveModelBehavior for the model and we don't want it to be removed</sub></sup>
+
+<sub><sup>Grab the generated entity in models\*temp folder and move to models folder</sub></sup>
 
 ```
 sea-orm-cli generate entity -o ./src/models_temp -t TABLE_NAME
