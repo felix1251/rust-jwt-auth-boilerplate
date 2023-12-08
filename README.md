@@ -108,7 +108,7 @@ Generate Enitity
 
 <sub><sup>You might have written ActiveModelBehavior for the model and we don't want it to be removed</sub></sup>
 
-<sub><sup>Grab the generated entity in models\*temp folder and move to models folder</sub></sup>
+<sub><sup>Grab the generated entity in models temp folder and move to models folder</sub></sup>
 
 ```
 sea-orm-cli generate entity -o ./src/models_temp -t TABLE_NAME
