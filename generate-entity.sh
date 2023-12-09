@@ -1,14 +1,13 @@
+# Generate entity to temporary directory
+commaSeparated=$(printf '%s,' $@)
+sea-orm-cli generate entity -o ./src/models_temp -t "${commaSeparated%,}"
+
 for table in "$@"
 do
-  # Generate entity to temporary directory
-  sea-orm-cli generate entity -o ./src/models_temp -t $table
-
   # Check if file exists in temp file
   if test -f ./src/models_temp/$table.rs && ! test -f ./src/models/$table.rs; then
     # Copy to models
     cp -i ./src/models_temp/$table.rs ./src/models
-  else
-    echo "models/$1.rs -> file already exist"
   fi
 
   if test -f ./src/models/$table.rs; then
