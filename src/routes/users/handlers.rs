@@ -1,4 +1,4 @@
-use crate::models::users;
+use crate::models::users::Model as UserModel;
 use axum::Extension;
 use axum::Json;
 use serde::Serialize;
@@ -25,7 +25,7 @@ pub struct CurrentUser {
     ),
     security(("bearer_auth" = []))
 )]
-pub async fn me(Extension(current_user): Extension<users::Model>) -> Result<Json<CurrentUser>, ()> {
+pub async fn me(Extension(current_user): Extension<UserModel>) -> Result<Json<CurrentUser>, ()> {
     let me = CurrentUser {
         id: current_user.id,
         uuid: current_user.uuid.to_string(),
