@@ -3,12 +3,14 @@ use axum::Extension;
 use axum::Json;
 use serde::Serialize;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 #[derive(ToSchema, Serialize, Clone)]
 pub struct CurrentUser {
     #[schema(example = 1)]
     pub id: i32,
-    pub uuid: String,
+    #[schema(value_type = String, example = "e15f9d3e-7fe5-4822-9f9d-0d4d4456d33a")]
+    pub uuid: Uuid,
     #[schema(example = "John Doe")]
     pub fullname: String,
     #[schema(example = "john_doe@email.com")]
@@ -28,7 +30,7 @@ pub struct CurrentUser {
 pub async fn me(Extension(current_user): Extension<UserModel>) -> Result<Json<CurrentUser>, ()> {
     let me = CurrentUser {
         id: current_user.id,
-        uuid: current_user.uuid.to_string(),
+        uuid: current_user.uuid,
         fullname: current_user.fullname,
         email: current_user.email,
     };
