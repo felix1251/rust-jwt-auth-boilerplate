@@ -25,15 +25,19 @@ pub async fn auth_user(
     let secret = dotenv!("JWT_TOKEN_SECRET");
     let decoded_token = decode_token(token, secret)?;
 
-    let current_user = Users::find_by_id(decoded_token.id)
-        .one(&db)
-        .await
-        .unwrap()
-        .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+    let user = Users::find_by_id(decoded_token.id).one(&db).await.unwrap();
+    // Do the same thing
+    // .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+    // Ok(next.run(request).await).into();
 
-    request.extensions_mut().insert(current_user);
+    match user {
+        Some(current_user) => {
+            request.extensions_mut().insert(current_user);
 
-    Ok(next.run(request).await).into()
+            Ok(next.run(request).await)
+        }
+        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+    }
 }
 
 fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
