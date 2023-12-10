@@ -1,6 +1,6 @@
 use crate::utils::{
     app_error::AppError,
-    jwt::{create_jwt, Tokens},
+    jwt::{create_jwt, AuthTokens},
 };
 use axum::Json;
 use serde::{Deserialize, Serialize};
@@ -18,11 +18,11 @@ pub struct RequestUser {
     tag = "Auth",
     path = "/auth/sign_in",
     responses(
-        (status = 200, description = "Token Response", body = Tokens),
+        (status = 200, description = "Token Response", body = AuthTokens),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
     )
 )]
-pub async fn sign_in(Json(request_user): Json<RequestUser>) -> Result<Json<Tokens>, AppError> {
+pub async fn sign_in(Json(request_user): Json<RequestUser>) -> Result<Json<AuthTokens>, AppError> {
     let token = create_jwt(request_user.id)?;
 
     Ok(Json(token))

@@ -16,14 +16,14 @@ pub struct Claims {
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct Tokens {
+pub struct AuthTokens {
     #[schema(example = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.....")]
     token: String,
     #[schema(example = "eyJFsdskDHJiOiJKV1QiLCJhbGudgsgSGIUz.....")]
     refresh_token: String,
 }
 
-pub fn create_jwt(id: i32) -> Result<Tokens, AppError> {
+pub fn create_jwt(id: i32) -> Result<AuthTokens, AppError> {
     let now = Utc::now();
     let iat = now.timestamp() as usize;
 
@@ -43,7 +43,7 @@ pub fn create_jwt(id: i32) -> Result<Tokens, AppError> {
     let secret = dotenv!("JWT_REFRESH_TOKEN_SECRET");
     let refresh_token = encode_token(claim, secret)?;
 
-    Ok(Tokens {
+    Ok(AuthTokens {
         token,
         refresh_token,
     })

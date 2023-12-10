@@ -20,7 +20,7 @@ use utoipa_swagger_ui::SwaggerUi;
     components(
         schemas(
             UnauthorizedSchema,
-            jwt::Tokens,
+            jwt::AuthTokens,
             home::HomeSchema,
             // users
             users::handlers::CurrentUser,
