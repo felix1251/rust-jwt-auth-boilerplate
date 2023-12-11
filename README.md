@@ -22,11 +22,11 @@ rust-jwt-auth-boilerplate
 
 ### Features
 
--   [x] Axum (Routing, Middleware, etc..)
--   [x] JsonWebToken
--   [x] PostgreSQL
--   [x] SeaORM (Model, Migration)
--   [x] Swagger API Inspector
+- [x] Axum (Routing, Middleware, etc..)
+- [x] JsonWebToken
+- [x] PostgreSQL
+- [x] SeaORM (Model, Migration)
+- [x] Swagger API Inspector
 
 ## Setup Dev Environment
 
