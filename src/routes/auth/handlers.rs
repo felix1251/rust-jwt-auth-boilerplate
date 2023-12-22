@@ -10,6 +10,7 @@ use utoipa::ToSchema;
 pub struct SignInParams {
     #[schema(example = "john_doe@email.com")]
     email: String,
+    #[schema(example = "password")]
     password: String,
 }
 
@@ -43,7 +44,9 @@ pub async fn sign_in(
 pub struct SignUpParams {
     #[schema(example = "john_doe@email.com")]
     email: String,
+    #[schema(example = "password")]
     password: String,
+    #[schema(example = "password")]
     password_confirmation: String,
 }
 
