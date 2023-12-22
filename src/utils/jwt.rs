@@ -53,18 +53,19 @@ pub fn encode_token(claim: Claims, secret: &str) -> Result<String, AppError> {
     let key = EncodingKey::from_secret(secret.as_bytes());
 
     encode(&Header::default(), &claim, &key)
-        .map_err(|_err| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
+        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
 }
 
 pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
     let key = DecodingKey::from_secret(secret.as_bytes());
 
     let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))
-        .map_err(|_err| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+        .map_err(|err| match err.kind() {
+            jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
+                AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")
+            }
+            _ => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+        })?;
 
     Ok(decoded_token.claims)
 }
-
-// pub fn is_valid() -> Result<bool, StatusCode> {
-//     todo!()
-// }

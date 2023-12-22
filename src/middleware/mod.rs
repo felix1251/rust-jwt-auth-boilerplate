@@ -25,10 +25,10 @@ pub async fn auth_user(
     let secret = dotenv!("JWT_TOKEN_SECRET");
     let decoded_token = decode_token(token, secret)?;
 
-    let user = Users::find_by_id(decoded_token.id).one(&db).await.unwrap();
-    // Do the same thing
-    // .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
-    // Ok(next.run(request).await).into();
+    let user = Users::find_by_id(decoded_token.id)
+        .one(&db)
+        .await
+        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
 
     match user {
         Some(current_user) => {
