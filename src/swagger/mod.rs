@@ -1,6 +1,6 @@
 use crate::routes::auth;
 use crate::routes::home;
-use crate::routes::users;
+// use crate::routes::users;
 use crate::utils::jwt;
 use serde::Serialize;
 use utoipa::openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme};
@@ -13,8 +13,8 @@ use utoipa_swagger_ui::SwaggerUi;
     paths(
         home::home,
         // users
-        users::handlers::me,
         // auths
+        auth::handlers::me,
         auth::handlers::sign_in,
         auth::handlers::sign_up
     ),
@@ -24,10 +24,10 @@ use utoipa_swagger_ui::SwaggerUi;
             jwt::AuthTokens,
             home::HomeSchema,
             // users
-            users::handlers::CurrentUser,
             // auth
             auth::handlers::SignInParams,
             auth::handlers::SignUpParams,
+            auth::handlers::CurrentUser,
             auth::handlers::InvalidCredentials,
         )
     ),
