@@ -13,7 +13,7 @@ pub async fn create_routes(db: DatabaseConnection) -> Router {
         // Home path /
         .route("/", get(home::home))
         // users routes
-        .nest("/users", users::routes(db.clone()))
+        // .nest("/users", users::routes(db.clone()))
         // auth routes
         .nest("/auth", auth::routes(db))
         // Trace layer for logging
