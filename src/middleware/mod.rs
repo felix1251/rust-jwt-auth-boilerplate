@@ -28,7 +28,7 @@ pub async fn auth_user(
     let user = Users::find_by_id(decoded_token.id)
         .one(&db)
         .await
-        .map_err(|_op| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
+        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
 
     match user {
         Some(current_user) => {
