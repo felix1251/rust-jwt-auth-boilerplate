@@ -15,7 +15,8 @@ use utoipa_swagger_ui::SwaggerUi;
         // users
         users::handlers::me,
         // auths
-        auth::handlers::sign_in
+        auth::handlers::sign_in,
+        auth::handlers::sign_up
     ),
     components(
         schemas(
@@ -25,7 +26,9 @@ use utoipa_swagger_ui::SwaggerUi;
             // users
             users::handlers::CurrentUser,
             // auth
-            auth::handlers::RequestUser,
+            auth::handlers::SignInParams,
+            auth::handlers::SignUpParams,
+            auth::handlers::InvalidCredentials,
         )
     ),
     modifiers(&SecurityAddon)
