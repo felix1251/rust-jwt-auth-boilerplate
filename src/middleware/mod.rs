@@ -29,9 +29,6 @@ pub async fn auth_user(
         .one(&db)
         .await
         .map_err(|_op| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
-    // Do the same thing
-    // .ok_or_else(|| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
-    // Ok(next.run(request).await).into();
 
     match user {
         Some(current_user) => {
