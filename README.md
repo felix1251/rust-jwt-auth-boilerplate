@@ -17,6 +17,7 @@ rust-jwt-auth-boilerplate
 ├── Cargo.lock
 ├── Cargo.toml
 ├── docker-compose.yml
+├── entity.sh
 └── README.md
 ```
 

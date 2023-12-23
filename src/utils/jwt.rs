@@ -1,11 +1,10 @@
+use super::app_error::AppError;
 use axum::http::StatusCode;
 use chrono::{Duration, Utc};
 use dotenvy_macro::dotenv;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-
-use super::app_error::AppError;
 
 /// Our claims struct, it needs to derive `Serialize` and/or `Deserialize`
 #[derive(Debug, Serialize, Deserialize, Clone)]
