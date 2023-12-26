@@ -1,12 +1,13 @@
 use crate::{
-    models::users::{self, Model as UserModel},
+    models::users::{self, Entity as Users, Model as UserModel},
     utils::{
         app_error::AppError,
         jwt::{create_jwt, AuthTokens},
+        password::{hash_password, verify_password},
     },
 };
 use axum::{extract::State, http::StatusCode, Extension, Json};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -21,7 +22,7 @@ pub struct SignInParams {
 
 #[derive(ToSchema)]
 pub struct InvalidCredentials {
-    #[schema(example = 400)]
+    #[schema(example = 404)]
     pub status: u16,
     #[schema(example = "Invalid credentials")]
     pub message: String,
@@ -34,15 +35,31 @@ pub struct InvalidCredentials {
     path = "/auth/sign_in",
     responses(
         (status = 200, description = "Token Response", body = AuthTokens),
-        (status = 400, description = "Invalid Credentials", body = InvalidCredentials)
+        (status = 404, description = "Invalid Credentials", body = InvalidCredentials)
     )
 )]
 pub async fn sign_in(
-    Json(_sign_in_params): Json<SignInParams>,
+    State(db): State<DatabaseConnection>,
+    Json(sign_in_params): Json<SignInParams>,
 ) -> Result<Json<AuthTokens>, AppError> {
-    let token = create_jwt(1)?;
+    let db_user = Users::find()
+        .filter(users::Column::Email.eq(sign_in_params.email))
+        .one(&db)
+        .await
+        .map_err(|_err| {
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
+        })?;
 
-    Ok(Json(token))
+    match db_user {
+        Some(user) => {
+            if !verify_password(sign_in_params.password, &user.encrypted_password)? {
+                return Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials"));
+            }
+            let token = create_jwt(user.id)?;
+            Ok(Json(token))
+        }
+        None => Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials")),
+    }
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
@@ -74,12 +91,18 @@ pub async fn sign_up(
         uuid: Set(Uuid::new_v4()),
         fullname: Set(sign_up_params.fullname),
         email: Set(sign_up_params.email),
-        encrypted_password: Set(sign_up_params.password),
+        encrypted_password: Set(hash_password(sign_up_params.password)?),
         ..Default::default()
     }
     .save(&db)
     .await
-    .map_err(|_op| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
+    .map_err(|err| match err {
+        sea_orm::DbErr::Query(_err) => AppError::new(
+            StatusCode::UNPROCESSABLE_ENTITY,
+            "errors: email already exists",
+        ),
+        _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+    })?;
 
     let token = create_jwt(new_user.id.unwrap())?;
 
