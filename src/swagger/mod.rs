@@ -21,6 +21,7 @@ use utoipa_swagger_ui::SwaggerUi;
     components(
         schemas(
             UnauthorizedSchema,
+            ValidationErrorSchema,
             jwt::AuthTokens,
             home::HomeSchema,
             // users
@@ -57,6 +58,13 @@ struct UnauthorizedSchema {
     #[schema(example = 401)]
     pub status: u16,
     #[schema(example = "UNAUTHORIZED")]
+    pub message: String,
+}
+
+#[derive(ToSchema, Serialize)]
+struct ValidationErrorSchema {
+    #[schema(example = 404)]
+    pub status: u16,
     pub message: String,
 }
 
