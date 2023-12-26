@@ -3,7 +3,7 @@ use crate::{
     utils::{
         app_error::AppError,
         jwt::{create_jwt, AuthTokens},
-        password::{hash_password, verify_password},
+        password::{compare_and_hash_password, verify_password},
     },
 };
 use axum::{extract::State, http::StatusCode, Extension, Json};
@@ -91,7 +91,10 @@ pub async fn sign_up(
         uuid: Set(Uuid::new_v4()),
         fullname: Set(sign_up_params.fullname),
         email: Set(sign_up_params.email),
-        encrypted_password: Set(hash_password(sign_up_params.password)?),
+        encrypted_password: Set(compare_and_hash_password(
+            sign_up_params.password,
+            sign_up_params.password_confirmation,
+        )?),
         ..Default::default()
     }
     .save(&db)
