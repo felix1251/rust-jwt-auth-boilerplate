@@ -21,7 +21,7 @@ impl IntoResponse for AppError {
             self.code,
             Json(ErrorResponse {
                 status: self.code.as_u16(),
-                error: self.message,
+                message: self.message,
             }),
         )
             .into_response()
@@ -31,5 +31,5 @@ impl IntoResponse for AppError {
 #[derive(Serialize, Deserialize)]
 struct ErrorResponse {
     status: u16,
-    error: String,
+    message: String,
 }
