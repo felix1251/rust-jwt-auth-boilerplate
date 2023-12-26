@@ -92,26 +92,34 @@ pub async fn sign_up(
     State(db): State<DatabaseConnection>,
     Json(sign_up_params): Json<SignUpParams>,
 ) -> Result<Json<AuthTokens>, AppError> {
-    let new_user = users::ActiveModel {
-        uuid: Set(Uuid::new_v4()),
-        fullname: Set(sign_up_params.fullname),
-        email: Set(sign_up_params.email),
-        encrypted_password: Set(hash_password(sign_up_params.password)?),
-        ..Default::default()
-    }
-    .save(&db)
-    .await
-    .map_err(|err| match err {
-        sea_orm::DbErr::Query(_err) => AppError::new(
+    match sign_up_params.validate() {
+        Ok(_) => {
+            let new_user = users::ActiveModel {
+                uuid: Set(Uuid::new_v4()),
+                fullname: Set(sign_up_params.fullname),
+                email: Set(sign_up_params.email),
+                encrypted_password: Set(hash_password(sign_up_params.password)?),
+                ..Default::default()
+            }
+            .save(&db)
+            .await
+            .map_err(|err| match err {
+                sea_orm::DbErr::Query(_err) => AppError::new(
+                    StatusCode::UNPROCESSABLE_ENTITY,
+                    "errors: email already exists",
+                ),
+                _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+            })?;
+
+            let token = create_jwt(new_user.id.unwrap())?;
+
+            Ok(Json(token))
+        }
+        Err(err) => Err(AppError::new(
             StatusCode::UNPROCESSABLE_ENTITY,
-            "errors: email already exists",
-        ),
-        _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
-    })?;
-
-    let token = create_jwt(new_user.id.unwrap())?;
-
-    Ok(Json(token))
+            err.to_string(),
+        )),
+    }
 }
 
 #[derive(ToSchema, Serialize, Clone)]
