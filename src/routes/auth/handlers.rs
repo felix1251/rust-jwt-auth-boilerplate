@@ -11,10 +11,12 @@ use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, Qu
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
+use validator::Validate;
 
-#[derive(Serialize, Deserialize, ToSchema)]
+#[derive(Serialize, Deserialize, Validate, ToSchema)]
 pub struct SignInParams {
     #[schema(example = "john_doe@email.com")]
+    #[validate(email)]
     email: String,
     #[schema(example = "password")]
     password: String,
@@ -62,15 +64,18 @@ pub async fn sign_in(
     }
 }
 
-#[derive(Serialize, Deserialize, ToSchema)]
+#[derive(Serialize, Deserialize, Validate, ToSchema)]
 pub struct SignUpParams {
     #[schema(example = "john_doe@email.com")]
+    #[validate(email)]
     email: String,
     #[schema(example = "John Doe")]
     fullname: String,
     #[schema(example = "password")]
+    #[validate(length(min = 6))]
     password: String,
     #[schema(example = "password")]
+    #[validate(must_match = "password")]
     password_confirmation: String,
 }
 

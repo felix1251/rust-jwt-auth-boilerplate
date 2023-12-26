@@ -2,7 +2,7 @@ use super::app_error::AppError;
 use axum::http::StatusCode;
 
 pub fn hash_password(password: String) -> Result<String, AppError> {
-    bcrypt::hash(password, 14)
+    bcrypt::hash(password, 12)
         .map_err(|_err| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
 }
 
