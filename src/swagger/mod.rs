@@ -63,7 +63,7 @@ struct UnauthorizedSchema {
 
 #[derive(ToSchema, Serialize)]
 struct ValidationErrorSchema {
-    #[schema(example = 404)]
+    #[schema(example = 422)]
     pub status: u16,
     pub message: String,
 }
