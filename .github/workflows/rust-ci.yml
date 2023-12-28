@@ -11,7 +11,6 @@ env:
   DB_PASSWORD: password
   DB_HOST: localhost
   DB_PORT: 5432
-  DATABASE_URL: postgres://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@${{ env.DB_HOST }}:${{ emv.DB_PORT }}/${{ env.DB_NAME }}
   JWT_TOKEN_SECRET: secret
   JWT_REFRESH_TOKEN_SECRET: secret
 jobs:
@@ -33,6 +32,8 @@ jobs:
           --health-retries 15
     steps:
       - uses: actions/checkout@v3
+      - name: Set env DATABASE_URL
+        run: echo ::set-env name=DATABASE_URL::postgres://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@${{ env.DB_HOST }}:${{ emv.DB_PORT }}/${{ env.DB_NAME }}
       - name: Build
         run: cargo build --verbose
       - name: Run tests
