@@ -22,7 +22,7 @@ pub async fn auth_user(
     let auth_header = get_auth_header(headers)?;
     let token = strip_auth_header(auth_header)?;
 
-    let secret = dotenv!("JWT_TOKEN_SECRET");
+    let secret = format!("{}", dotenv!("JWT_TOKEN_SECRET"));
     let decoded_token = decode_token(token, secret)?;
 
     let user = Users::find_by_id(decoded_token.id)

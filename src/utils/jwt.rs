@@ -31,7 +31,7 @@ pub fn create_jwt(id: i32) -> Result<AuthTokens, AppError> {
     let exp = expires_in.timestamp() as usize;
 
     let claim = Claims { id, exp, iat };
-    let secret = dotenv!("JWT_TOKEN_SECRET");
+    let secret = format!("{}", dotenv!("JWT_TOKEN_SECRET"));
     let token = encode_token(claim, secret)?;
 
     // Refresh Token
@@ -39,7 +39,7 @@ pub fn create_jwt(id: i32) -> Result<AuthTokens, AppError> {
     let exp = expires_in.timestamp() as usize;
 
     let claim = Claims { id, exp, iat };
-    let secret = dotenv!("JWT_REFRESH_TOKEN_SECRET");
+    let secret = format!("{}", dotenv!("JWT_REFRESH_TOKEN_SECRET"));
     let refresh_token = encode_token(claim, secret)?;
 
     Ok(AuthTokens {
@@ -48,14 +48,14 @@ pub fn create_jwt(id: i32) -> Result<AuthTokens, AppError> {
     })
 }
 
-pub fn encode_token(claim: Claims, secret: &str) -> Result<String, AppError> {
+pub fn encode_token(claim: Claims, secret: String) -> Result<String, AppError> {
     let key = EncodingKey::from_secret(secret.as_bytes());
 
     encode(&Header::default(), &claim, &key)
         .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
 }
 
-pub fn decode_token(token: &str, secret: &str) -> Result<Claims, AppError> {
+pub fn decode_token(token: &str, secret: String) -> Result<Claims, AppError> {
     let key = DecodingKey::from_secret(secret.as_bytes());
 
     let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))

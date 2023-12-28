@@ -5,7 +5,7 @@ mod routes;
 mod swagger;
 mod utils;
 
-pub async fn run(db_uri: &str) {
+pub async fn run(db_uri: String) {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .init();
