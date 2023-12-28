@@ -4,27 +4,27 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
-env:
-  CARGO_TERM_COLOR: always
-  DB_USER: rs_auth
-  DB_NAME: rs_auth_db
-  DB_PASSWORD: password
-  DB_HOST: localhost
-  DB_PORT: 5432
-  JWT_TOKEN_SECRET: secret
-  JWT_REFRESH_TOKEN_SECRET: secret
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+      DB_USER: rs_auth
+      DB_NAME: rs_auth_db
+      DB_PASSWORD: password
+      DB_HOST: localhost
+      DB_PORT: 5432
+      JWT_TOKEN_SECRET: secret
+      JWT_REFRESH_TOKEN_SECRET: secret
     services:
       postgres:
         image: postgres:15
         ports:
-          - ${{ env.DB_PORT }}:${{ env.DB_PORT }}
+          - $DB_PORT:$DB_PORT
         env:
-          POSTGRES_USER: ${{ env.DB_USER }}
-          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
-          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_USER: $DB_USER
+          POSTGRES_PASSWORD: $DB_PASSWORD
+          POSTGRES_DB: $DB_NAME
         options: >-
           --health-cmd pg_isready
           --health-interval 10ms
@@ -32,8 +32,8 @@ jobs:
           --health-retries 15
     steps:
       - uses: actions/checkout@v3
-      - name: Set env DATABASE_URL
-        run: echo ::set-env name=DATABASE_URL::postgres://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@${{ env.DB_HOST }}:${{ emv.DB_PORT }}/${{ env.DB_NAME }}
+      - name: Set DB url env
+        run: echo "DATABASE_URL=postgres://${{ env.DB_USER}}:${{ env.DB_PASSWORD }}@${{ env.DB_HOST }}:${{ env.DB_PORT }}/${{ env.DB_NAME }}
       - name: Build
         run: cargo build --verbose
       - name: Run tests
