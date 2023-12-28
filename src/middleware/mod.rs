@@ -30,14 +30,13 @@ pub async fn auth_user(
         .await
         .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
 
-    match user {
-        Some(current_user) => {
-            request.extensions_mut().insert(current_user);
+    if let Some(current_user) = user {
+        request.extensions_mut().insert(current_user);
 
-            Ok(next.run(request).await)
-        }
-        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+        return Ok(next.run(request).await);
     }
+
+    Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))
 }
 
 fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
