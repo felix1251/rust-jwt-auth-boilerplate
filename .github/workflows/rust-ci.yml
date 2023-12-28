@@ -21,7 +21,7 @@ jobs:
       postgres:
         image: postgres:15
         ports:
-          - ${DB_PORT}:${DB_PORT
+          - ${DB_PORT}:${DB_PORT}
         env:
           POSTGRES_USER: ${DB_USER}
           POSTGRES_PASSWORD: ${DB_PASSWORD}
