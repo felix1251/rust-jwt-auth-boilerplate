@@ -25,7 +25,7 @@ jobs:
           --health-retries 15
     steps:
       - uses: actions/checkout@v3
-      - name: Set DB url env
+      - name: Set ENV variables
         run: |
           echo "DATABASE_URL=postgres://rs_auth:password@localhost:5432/rs_auth_db" >> .env
           echo "JWT_TOKEN_SECRET=secret" >> .env
