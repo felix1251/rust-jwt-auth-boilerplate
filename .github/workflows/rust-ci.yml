@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set DB url env
-        run: echo "DATABASE_URL=postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+        run: echo "DATABASE_URL=postgres://rs_auth:password@localhost:5432/rs_auth_db
       - name: Build
         run: cargo build --verbose
       - name: Run tests
