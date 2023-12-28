@@ -6,9 +6,6 @@ on:
     branches: [main, develop]
 env:
   CARGO_TERM_COLOR: always
-  JWT_TOKEN_SECRET: secret
-  JWT_REFRESH_TOKEN_SECRET: secret
-  DATABASE_URL: postgres://rs_auth:password@localhost:5432/rs_auth_db
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set DB url env
-        run: echo "DATABASE_URL=postgres://rs_auth:password@localhost:5432/rs_auth_db"
+        run: |
+          echo "DATABASE_URL=postgres://rs_auth:password@localhost:5432/rs_auth_db"
+          echo "JWT_TOKEN_SECRET=secret"
+          echo "JWT_REFRESH_TOKEN_SECRET=secret"
       - name: Build
         run: cargo build --verbose
       - name: Run tests
