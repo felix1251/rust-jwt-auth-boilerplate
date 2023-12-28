@@ -6,9 +6,31 @@ on:
     branches: ["main", "develop"]
 env:
   CARGO_TERM_COLOR: always
+  DB_USER: rs_auth
+  DB_NAME: rs_auth_db
+  DB_PASSWORD: password
+  DB_HOST: localhost
+  DB_PORT: 5432
+  DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+  JWT_TOKEN_SECRET: secret
+  JWT_REFRESH_TOKEN_SECRET: secret
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - ${DB_PORT}:${DB_PORT
+        env:
+          POSTGRES_USER: ${DB_USER}
+          POSTGRES_PASSWORD: ${DB_PASSWORD}
+          POSTGRES_DB: ${DB_NAME}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10ms
+          --health-timeout 500ms
+          --health-retries 15
     steps:
       - uses: actions/checkout@v3
       - name: Build
