@@ -58,11 +58,8 @@ pub async fn sign_in(
         .filter(users::Column::Email.eq(sign_in_params.email))
         .one(&db)
         .await
-        .map_err(|err| match err {
-            sea_orm::DbErr::Query(_err) => {
-                AppError::new(StatusCode::UNPROCESSABLE_ENTITY, "Invalid Credentials")
-            }
-            _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+        .map_err(|_err| {
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
         })?;
 
     if let Some(user) = db_user {
