@@ -7,7 +7,10 @@ use crate::{
     },
 };
 use axum::{extract::State, http::StatusCode, Extension, Json};
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
+use sea_orm::{
+    prelude::DateTimeWithTimeZone, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
+    QueryFilter, Set,
+};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -55,8 +58,11 @@ pub async fn sign_in(
         .filter(users::Column::Email.eq(sign_in_params.email))
         .one(&db)
         .await
-        .map_err(|_err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
+        .map_err(|err| match err {
+            sea_orm::DbErr::Query(_err) => {
+                AppError::new(StatusCode::UNPROCESSABLE_ENTITY, "Invalid Credentials")
+            }
+            _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
         })?;
 
     if let Some(user) = db_user {
@@ -136,10 +142,10 @@ pub struct CurrentUser {
     pub fullname: String,
     #[schema(example = "john_doe@email.com")]
     pub email: String,
-    #[schema(example = "2023-11-05T13:15:30Z")]
-    pub created_at: String,
-    #[schema(example = "2023-11-05T13:15:30Z")]
-    pub updated_at: String,
+    #[schema(value_type = String, example = "2023-11-05T13:15:30Z")]
+    pub created_at: DateTimeWithTimeZone,
+    #[schema(value_type = String, example = "2023-11-05T13:15:30Z")]
+    pub updated_at: DateTimeWithTimeZone,
 }
 
 #[utoipa::path(
@@ -158,8 +164,8 @@ pub async fn me(Extension(current_user): Extension<UserModel>) -> Result<Json<Cu
         uuid: current_user.uuid,
         fullname: current_user.fullname,
         email: current_user.email,
-        created_at: current_user.created_at.to_string(),
-        updated_at: current_user.updated_at.to_string(),
+        created_at: current_user.created_at,
+        updated_at: current_user.updated_at,
     };
 
     Ok(Json(me))
