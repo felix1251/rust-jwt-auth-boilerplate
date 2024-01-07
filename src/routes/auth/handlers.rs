@@ -131,8 +131,6 @@ pub async fn sign_up(
 
 #[derive(ToSchema, Serialize, Clone)]
 pub struct CurrentUser {
-    #[schema(example = 1)]
-    pub id: i32,
     #[schema(value_type = String, example = "e15f9d3e-7fe5-4822-9f9d-0d4d4456d33a")]
     pub uuid: Uuid,
     #[schema(example = "John Doe")]
@@ -157,7 +155,6 @@ pub struct CurrentUser {
 )]
 pub async fn me(Extension(current_user): Extension<UserModel>) -> Result<Json<CurrentUser>, ()> {
     let me = CurrentUser {
-        id: current_user.id,
         uuid: current_user.uuid,
         fullname: current_user.fullname,
         email: current_user.email,
