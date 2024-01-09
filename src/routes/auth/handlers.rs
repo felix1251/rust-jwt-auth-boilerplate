@@ -119,10 +119,9 @@ pub async fn sign_up(
     .save(&db)
     .await
     .map_err(|err| match err {
-        sea_orm::DbErr::Query(_err) => AppError::new(
-            StatusCode::UNPROCESSABLE_ENTITY,
-            "User does not exist or Invalid",
-        ),
+        sea_orm::DbErr::Query(_err) => {
+            AppError::new(StatusCode::UNPROCESSABLE_ENTITY, "User exist or Invalid")
+        }
         _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
     })?;
 
