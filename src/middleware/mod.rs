@@ -32,29 +32,25 @@ pub async fn auth_user(
 
     if let Some(current_user) = user {
         request.extensions_mut().insert(current_user);
-
         return Ok(next.run(request).await);
     }
-
-    Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))
+    return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
 }
 
 fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
     let auth_header = headers.get("Authorization");
-
-    match auth_header {
-        Some(token) => Ok(token.to_str().unwrap()),
-        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+    if let Some(token) = auth_header {
+        return Ok(token.to_str().unwrap());
     }
+    return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
 }
 
 fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
     let token = auth_header.strip_prefix("Bearer ");
-
-    match token {
-        Some(token) => Ok(token),
-        None => Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")),
+    if let Some(token) = token {
+        return Ok(token);
     }
+    return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
 }
 
 pub fn cors() -> CorsLayer {
@@ -64,5 +60,5 @@ pub fn cors() -> CorsLayer {
 }
 
 pub async fn fallback() -> Result<(), AppError> {
-    Err(AppError::new(StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"))
+    return Err(AppError::new(StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"));
 }

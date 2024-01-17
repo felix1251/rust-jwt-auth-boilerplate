@@ -70,7 +70,7 @@ pub async fn sign_in(
         return Ok(Json(token));
     }
 
-    Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials"))
+    return Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials"));
 }
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
@@ -126,7 +126,8 @@ pub async fn sign_up(
     })?;
 
     let token = create_jwt(new_user.id.unwrap())?;
-    Ok(Json(token))
+
+    return Ok(Json(token));
 }
 
 #[derive(ToSchema, Serialize, Clone)]
@@ -162,5 +163,5 @@ pub async fn me(Extension(current_user): Extension<UserModel>) -> Json<CurrentUs
         updated_at: current_user.updated_at,
     };
 
-    Json(me)
+    return Json(me);
 }
