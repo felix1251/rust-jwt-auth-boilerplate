@@ -69,7 +69,6 @@ pub async fn sign_in(
         let token = create_jwt(user.id)?;
         return Ok(Json(token));
     }
-
     return Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials"));
 }
 
