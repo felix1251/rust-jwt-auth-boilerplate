@@ -45,9 +45,10 @@ pub struct InvalidCredentials {
     tag = "Auth",
     path = "/auth/sign_in",
     responses(
-        (status = 200, description = "Token Response", body = AuthTokens),
-        (status = 404, description = "Invalid Credentials", body = InvalidCredentials),
-        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
+        (status = 200, description = "Token response", body = AuthTokens),
+        (status = 404, description = "Invalid credentials", body = InvalidCredentials),
+        (status = 422, description = "Request body validation errors", body = ValidationErrorSchema),
+        (status = 500, description = "Internal server error", body = InternalErrorSchema),
     )
 )]
 pub async fn sign_in(
@@ -99,8 +100,8 @@ pub struct SignUpParams {
     path = "/auth/sign_up",
     responses(
         (status = 201, description = "User created with token response", body = AuthTokens),
-        (status = 422, description = "Validation Errors", body = ValidationErrorSchema),
-        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
+        (status = 422, description = "Request body validation errors", body = ValidationErrorSchema),
+        (status = 500, description = "Internal server error", body = InternalErrorSchema),
     )
 )]
 pub async fn sign_up(
@@ -186,9 +187,9 @@ pub struct CurrentUser {
     tag = "Auth",
     path = "/auth/me",
     responses(
-        (status = 200, description = "Current user", body = CurrentUser),
+        (status = 200, description = "Current user info", body = CurrentUser),
         (status = 401, description = "Unauthenticated", body = UnauthorizedSchema),
-        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
+        (status = 500, description = "Internal server error", body = InternalErrorSchema),
     ),
     security(("bearer_auth" = []))
 )]
