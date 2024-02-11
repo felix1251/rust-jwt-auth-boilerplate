@@ -35,7 +35,7 @@ pub fn create_jwt(id: i32) -> Result<AuthTokens, AppError> {
     let token = encode_token(claim, secret)?;
 
     // Refresh Token
-    let expires_in = now + Duration::days(2);
+    let expires_in = now + Duration::weeks(1);
     let exp = expires_in.timestamp() as usize;
 
     let claim = Claims { id, exp, iat };
