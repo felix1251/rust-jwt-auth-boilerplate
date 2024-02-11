@@ -1,12 +1,18 @@
 use crate::{
+    middleware::{get_auth_header, strip_auth_header},
     models::users::{self, Entity as Users, Model as UserModel},
     utils::{
         app_error::AppError,
-        jwt::{create_jwt, AuthTokens},
+        jwt::{create_jwt, decode_token, AuthTokens},
         password::{hash_password, verify_password},
     },
 };
-use axum::{extract::State, http::StatusCode, Extension, Json};
+use axum::{
+    extract::{Request, State},
+    http::StatusCode,
+    Extension, Json,
+};
+use dotenvy_macro::dotenv;
 use sea_orm::{
     prelude::DateTimeWithTimeZone, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
     QueryFilter, Set,
@@ -40,7 +46,8 @@ pub struct InvalidCredentials {
     path = "/auth/sign_in",
     responses(
         (status = 200, description = "Token Response", body = AuthTokens),
-        (status = 404, description = "Invalid Credentials", body = InvalidCredentials)
+        (status = 404, description = "Invalid Credentials", body = InvalidCredentials),
+        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
     )
 )]
 pub async fn sign_in(
@@ -93,8 +100,9 @@ pub struct SignUpParams {
     tag = "Auth",
     path = "/auth/sign_up",
     responses(
-        (status = 201, description = "User created with token Response", body = AuthTokens),
+        (status = 201, description = "User created with token response", body = AuthTokens),
         (status = 422, description = "Validation Errors", body = ValidationErrorSchema),
+        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
     )
 )]
 pub async fn sign_up(
@@ -129,7 +137,39 @@ pub async fn sign_up(
     return Ok(Json(token));
 }
 
-#[derive(ToSchema, Serialize, Clone)]
+#[utoipa::path(
+    post,
+    tag = "Auth",
+    path = "/auth/refresh",
+    responses(
+        (status = 201, description = "Refresh token response", body = AuthTokens),
+        (status = 401, description = "Unauthenticated", body = UnauthorizedSchema),
+        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
+    ),
+    security(("bearer_auth" = []))
+)]
+pub async fn refresh_token(
+    State(db): State<DatabaseConnection>,
+    request: Request,
+) -> Result<Json<AuthTokens>, AppError> {
+    let headers = request.headers();
+    let auth_header = get_auth_header(headers)?;
+    let token = strip_auth_header(auth_header)?;
+
+    let secret = format!("{}", dotenv!("JWT_REFRESH_TOKEN_SECRET"));
+    let decoded_refresh_token = decode_token(token, secret)?;
+
+    let _user = Users::find_by_id(decoded_refresh_token.id)
+        .one(&db)
+        .await
+        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
+
+    let token = create_jwt(decoded_refresh_token.id)?;
+
+    return Ok(Json(token));
+}
+
+#[derive(ToSchema, Serialize, Deserialize, Clone)]
 pub struct CurrentUser {
     #[schema(value_type = String, example = "e15f9d3e-7fe5-4822-9f9d-0d4d4456d33a")]
     pub uuid: Uuid,
@@ -148,8 +188,9 @@ pub struct CurrentUser {
     tag = "Auth",
     path = "/auth/me",
     responses(
-        (status = 200, description = "Current User", body = CurrentUser),
-        (status = 401, description = "Unauthenticated", body = UnauthorizedSchema)
+        (status = 200, description = "Current user", body = CurrentUser),
+        (status = 401, description = "Unauthenticated", body = UnauthorizedSchema),
+        (status = 500, description = "Internal Server Error", body = InternalErrorSchema),
     ),
     security(("bearer_auth" = []))
 )]

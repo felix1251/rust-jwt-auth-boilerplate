@@ -16,5 +16,6 @@ pub fn routes(db: DatabaseConnection) -> Router {
         .route_layer(from_fn_with_state(db.clone(), auth_user))
         .route("/sign_in", post(handlers::sign_in))
         .route("/sign_up", post(handlers::sign_up))
+        .route("/refresh", post(handlers::refresh_token))
         .with_state(db)
 }
