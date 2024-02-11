@@ -60,10 +60,8 @@ pub fn decode_token(token: &str, secret: String) -> Result<Claims, AppError> {
 
     let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))
         .map_err(|err| match err.kind() {
-            jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
-                AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")
-            }
-            jsonwebtoken::errors::ErrorKind::InvalidToken => {
+            jsonwebtoken::errors::ErrorKind::ExpiredSignature
+            | jsonwebtoken::errors::ErrorKind::InvalidToken => {
                 AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")
             }
             _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
