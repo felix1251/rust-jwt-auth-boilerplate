@@ -37,7 +37,7 @@ pub async fn auth_user(
     return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
 }
 
-fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
+pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
     let auth_header = headers.get("Authorization");
     if let Some(token) = auth_header {
         return Ok(token.to_str().unwrap());
@@ -45,7 +45,7 @@ fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
     return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
 }
 
-fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
+pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
     let token = auth_header.strip_prefix("Bearer ");
     if let Some(token) = token {
         return Ok(token);

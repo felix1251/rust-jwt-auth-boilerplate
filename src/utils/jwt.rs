@@ -63,7 +63,10 @@ pub fn decode_token(token: &str, secret: String) -> Result<Claims, AppError> {
             jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
                 AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")
             }
-            _ => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+            jsonwebtoken::errors::ErrorKind::InvalidToken => {
+                AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")
+            }
+            _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
         })?;
 
     Ok(decoded_token.claims)

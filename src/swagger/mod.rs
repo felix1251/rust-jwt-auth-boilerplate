@@ -16,11 +16,13 @@ use utoipa_swagger_ui::SwaggerUi;
         // auths
         auth::handlers::me,
         auth::handlers::sign_in,
-        auth::handlers::sign_up
+        auth::handlers::sign_up,
+        auth::handlers::refresh_token
     ),
     components(
         schemas(
             UnauthorizedSchema,
+            InternalErrorSchema,
             ValidationErrorSchema,
             jwt::AuthTokens,
             home::HomeSchema,
@@ -58,6 +60,14 @@ struct UnauthorizedSchema {
     #[schema(example = 401)]
     pub status: u16,
     #[schema(example = "UNAUTHORIZED")]
+    pub message: String,
+}
+
+#[derive(ToSchema, Serialize)]
+struct InternalErrorSchema {
+    #[schema(example = 500)]
+    pub status: u16,
+    #[schema(example = "INTERNAL_SERVER_ERROR")]
     pub message: String,
 }
 
