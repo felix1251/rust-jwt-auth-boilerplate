@@ -35,7 +35,7 @@ pub struct SignInParams {
 pub struct InvalidCredentials {
     #[schema(example = 404)]
     pub status: u16,
-    #[schema(example = "Invalid credentials")]
+    #[schema(example = "INVALID_CREDENTIALS")]
     pub message: String,
 }
 
@@ -65,18 +65,16 @@ pub async fn sign_in(
         .filter(users::Column::Email.eq(sign_in_params.email))
         .one(&db)
         .await
-        .map_err(|_err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
-        })?;
+        .map_err(|_err| AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"))?;
 
     if let Some(user) = db_user {
         if !verify_password(sign_in_params.password, &user.encrypted_password)? {
-            return Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials"));
+            return Err(AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"));
         }
         let token = create_jwt(user.id)?;
         return Ok(Json(token));
     }
-    return Err(AppError::new(StatusCode::NOT_FOUND, "Invalid Credentials"));
+    return Err(AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"));
 }
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
