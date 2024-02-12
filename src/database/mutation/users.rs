@@ -32,7 +32,7 @@ pub async fn create_user(
     .await
     .map_err(|err| match err {
         sea_orm::DbErr::Query(_err) => AppError::new(
-            StatusCode::UNPROCESSABLE_ENTITY,
+            StatusCode::CONFLICT,
             DynamicErrorType::String("USER_EXIST_OR_INVALID".to_string()),
         ),
         _else => AppError::new(

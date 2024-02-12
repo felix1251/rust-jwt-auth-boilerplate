@@ -24,6 +24,7 @@ use utoipa_swagger_ui::SwaggerUi;
             UnauthorizedSchema,
             InternalErrorSchema,
             ValidationErrorSchema,
+            UserExistOrInvalidSchema,
             jwt::AuthTokens,
             home::HomeSchema,
             // users
@@ -76,6 +77,14 @@ struct ValidationErrorSchema {
     #[schema(example = 422)]
     pub status: u16,
     #[schema(example = json!({ "email": [{"code": "email", "message": "Invalid Email", "params": { "value": "sample" }}]}))]
+    pub error: String,
+}
+
+#[derive(ToSchema, Serialize)]
+struct UserExistOrInvalidSchema {
+    #[schema(example = 409)]
+    pub status: u16,
+    #[schema(example = "USER_EXIST_OR_INVALID")]
     pub error: String,
 }
 
