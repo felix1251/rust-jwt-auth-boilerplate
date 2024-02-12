@@ -25,13 +25,13 @@ use validator::Validate;
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
 pub struct SignInParams {
-    #[schema(example = "john_doe@email.com", nullable = false)]
+    #[schema(example = "john_doe@email.com", nullable = false, required = true)]
     #[validate(
         required(message = "Email is required"),
         email(message = "Invalid Email")
     )]
     email: Option<String>,
-    #[schema(example = "password", nullable = false)]
+    #[schema(example = "password", nullable = false, required = true)]
     #[validate(required(message = "Password is required"))]
     password: Option<String>,
 }
@@ -81,16 +81,16 @@ pub async fn sign_in(
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
 pub struct SignUpParams {
-    #[schema(example = "john_doe@email.com", nullable = false)]
+    #[schema(example = "john_doe@email.com", nullable = false, required = true)]
     #[validate(
         required(message = "Email is required"),
         email(message = "Invalid Email")
     )]
     pub email: Option<String>,
-    #[schema(example = "John Doe", nullable = false)]
+    #[schema(example = "John Doe", nullable = false, required = true)]
     #[validate(required(message = "Fullname is required"))]
     pub fullname: Option<String>,
-    #[schema(example = "password", nullable = false)]
+    #[schema(example = "password", nullable = false, required = true)]
     #[validate(
         required(message = "Password is required"),
         length(min = 6, message = "Password must be at least 6 characters")
