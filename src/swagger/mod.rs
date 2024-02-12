@@ -60,7 +60,7 @@ struct UnauthorizedSchema {
     #[schema(example = 401)]
     pub status: u16,
     #[schema(example = "UNAUTHORIZED")]
-    pub message: String,
+    pub error: String,
 }
 
 #[derive(ToSchema, Serialize)]
@@ -68,14 +68,15 @@ struct InternalErrorSchema {
     #[schema(example = 500)]
     pub status: u16,
     #[schema(example = "INTERNAL_SERVER_ERROR")]
-    pub message: String,
+    pub error: String,
 }
 
 #[derive(ToSchema, Serialize)]
 struct ValidationErrorSchema {
     #[schema(example = 422)]
     pub status: u16,
-    pub message: String,
+    #[schema(example = json!({ "email": [{"code": "email", "message": "Invalid Email", "params": { "value": "sample" }}]}))]
+    pub error: String,
 }
 
 pub fn swagger_ui() -> SwaggerUi {

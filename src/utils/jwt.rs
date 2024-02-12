@@ -1,4 +1,4 @@
-use super::app_error::AppError;
+use super::app_error::{AppError, DynamicErrorType};
 use axum::http::StatusCode;
 use chrono::{Duration, Utc};
 use dotenvy_macro::dotenv;
@@ -51,8 +51,12 @@ pub fn create_jwt(id: i32) -> Result<AuthTokens, AppError> {
 pub fn encode_token(claim: Claims, secret: String) -> Result<String, AppError> {
     let key = EncodingKey::from_secret(secret.as_bytes());
 
-    encode(&Header::default(), &claim, &key)
-        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))
+    encode(&Header::default(), &claim, &key).map_err(|_| {
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+        )
+    })
 }
 
 pub fn decode_token(token: &str, secret: String) -> Result<Claims, AppError> {
@@ -61,10 +65,14 @@ pub fn decode_token(token: &str, secret: String) -> Result<Claims, AppError> {
     let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))
         .map_err(|err| match err.kind() {
             jsonwebtoken::errors::ErrorKind::ExpiredSignature
-            | jsonwebtoken::errors::ErrorKind::InvalidToken => {
-                AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED")
-            }
-            _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+            | jsonwebtoken::errors::ErrorKind::InvalidToken => AppError::new(
+                StatusCode::UNAUTHORIZED,
+                DynamicErrorType::String("UNAUTHORIZED".to_string()),
+            ),
+            _else => AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+            ),
         })?;
 
     Ok(decoded_token.claims)

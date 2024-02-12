@@ -1,16 +1,24 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
+use validator::ValidationErrors;
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum DynamicErrorType {
+    String(String),
+    ValidationErrors(ValidationErrors),
+}
 
 pub struct AppError {
     code: StatusCode,
-    message: String,
+    error: DynamicErrorType,
 }
 
 impl AppError {
-    pub fn new(code: StatusCode, message: impl Into<String>) -> Self {
+    pub fn new(code: StatusCode, error: impl Into<DynamicErrorType>) -> Self {
         Self {
             code,
-            message: message.into(),
+            error: error.into(),
         }
     }
 }
@@ -21,15 +29,15 @@ impl IntoResponse for AppError {
             self.code,
             Json(ErrorResponse {
                 status: self.code.as_u16(),
-                message: self.message,
+                error: self.error,
             }),
         )
             .into_response()
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 struct ErrorResponse {
     status: u16,
-    message: String,
+    error: DynamicErrorType,
 }

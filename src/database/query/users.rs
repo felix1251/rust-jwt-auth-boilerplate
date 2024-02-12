@@ -3,7 +3,7 @@ use crate::{
         prelude::Users,
         users::{self, Model as UsersModel},
     },
-    utils::app_error::AppError,
+    utils::app_error::{AppError, DynamicErrorType},
 };
 use axum::http::StatusCode;
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
@@ -12,10 +12,12 @@ pub async fn find_user_by_id(
     id: i32,
     db: DatabaseConnection,
 ) -> Result<Option<UsersModel>, AppError> {
-    let user = Users::find_by_id(id)
-        .one(&db)
-        .await
-        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
+    let user = Users::find_by_id(id).one(&db).await.map_err(|_| {
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+        )
+    })?;
 
     return Ok(user);
 }
@@ -29,7 +31,10 @@ pub async fn find_user_by_email(
         .one(&db)
         .await
         .map_err(|_err| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR")
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+            )
         })?;
 
     return Ok(user);

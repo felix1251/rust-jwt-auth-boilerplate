@@ -1,4 +1,5 @@
 use crate::database::query::users::find_user_by_id;
+use crate::utils::app_error::DynamicErrorType;
 use crate::utils::{app_error::AppError, jwt::decode_token};
 use axum::{
     extract::Request,
@@ -31,7 +32,10 @@ pub async fn auth_user(
         request.extensions_mut().insert(current_user);
         return Ok(next.run(request).await);
     }
-    return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
+    return Err(AppError::new(
+        StatusCode::UNAUTHORIZED,
+        DynamicErrorType::String("UNAUTHORIZED".to_string()),
+    ));
 }
 
 pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
@@ -39,7 +43,10 @@ pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
     if let Some(token) = auth_header {
         return Ok(token.to_str().unwrap());
     }
-    return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
+    return Err(AppError::new(
+        StatusCode::UNAUTHORIZED,
+        DynamicErrorType::String("UNAUTHORIZED".to_string()),
+    ));
 }
 
 pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
@@ -47,7 +54,10 @@ pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
     if let Some(token) = token {
         return Ok(token);
     }
-    return Err(AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"));
+    return Err(AppError::new(
+        StatusCode::UNAUTHORIZED,
+        DynamicErrorType::String("UNAUTHORIZED".to_string()),
+    ));
 }
 
 pub fn cors() -> CorsLayer {
@@ -57,5 +67,8 @@ pub fn cors() -> CorsLayer {
 }
 
 pub async fn fallback() -> Result<(), AppError> {
-    return Err(AppError::new(StatusCode::NOT_FOUND, "ROUTE_NOT_FOUND"));
+    return Err(AppError::new(
+        StatusCode::NOT_FOUND,
+        DynamicErrorType::String("UNAUTHORIZED".to_string()),
+    ));
 }
