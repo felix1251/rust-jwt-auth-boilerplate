@@ -1,6 +1,7 @@
 use crate::{
+    database::query::users::{find_user_by_email, find_user_by_id},
     middleware::{get_auth_header, strip_auth_header},
-    models::users::{self, Entity as Users, Model as UserModel},
+    models::users::{self, Model as UserModel},
     utils::{
         app_error::AppError,
         jwt::{create_jwt, decode_token, AuthTokens},
@@ -13,10 +14,7 @@ use axum::{
     Extension, Json,
 };
 use dotenvy_macro::dotenv;
-use sea_orm::{
-    prelude::DateTimeWithTimeZone, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
-    QueryFilter, Set,
-};
+use sea_orm::{prelude::DateTimeWithTimeZone, ActiveModelTrait, DatabaseConnection, Set};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -24,11 +22,15 @@ use validator::Validate;
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
 pub struct SignInParams {
-    #[schema(example = "john_doe@email.com")]
-    #[validate(email)]
-    email: String,
-    #[schema(example = "password")]
-    password: String,
+    #[schema(example = "john_doe@email.com", nullable = false)]
+    #[validate(
+        required(message = "Email is required"),
+        email(message = "Invalid Email")
+    )]
+    email: Option<String>,
+    #[schema(example = "password", nullable = false)]
+    #[validate(required(message = "Password is required"))]
+    password: Option<String>,
 }
 
 #[derive(ToSchema)]
@@ -62,14 +64,10 @@ pub async fn sign_in(
         ));
     }
 
-    let db_user = Users::find()
-        .filter(users::Column::Email.eq(sign_in_params.email))
-        .one(&db)
-        .await
-        .map_err(|_err| AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"))?;
+    let user = find_user_by_email(sign_in_params.email.unwrap(), db).await?;
 
-    if let Some(user) = db_user {
-        if !verify_password(sign_in_params.password, &user.encrypted_password)? {
+    if let Some(user) = user {
+        if !verify_password(sign_in_params.password.unwrap(), &user.encrypted_password)? {
             return Err(AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"));
         }
         let token = create_jwt(user.id)?;
@@ -80,17 +78,21 @@ pub async fn sign_in(
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
 pub struct SignUpParams {
-    #[schema(example = "john_doe@email.com")]
-    #[validate(email)]
-    email: String,
-    #[schema(example = "John Doe")]
-    fullname: String,
-    #[schema(example = "password")]
-    #[validate(length(min = 6))]
-    password: String,
-    #[schema(example = "password")]
-    #[validate(must_match = "password")]
-    password_confirmation: String,
+    #[schema(example = "john_doe@email.com", nullable = false)]
+    #[validate(
+        required(message = "Email is required"),
+        email(message = "Invalid Email")
+    )]
+    email: Option<String>,
+    #[schema(example = "John Doe", nullable = false)]
+    #[validate(required(message = "Fullname is required"))]
+    fullname: Option<String>,
+    #[schema(example = "password", nullable = false)]
+    #[validate(
+        required(message = "Password is required"),
+        length(min = 6, message = "Password must be at least 6 characters")
+    )]
+    password: Option<String>,
 }
 
 #[utoipa::path(
@@ -117,9 +119,9 @@ pub async fn sign_up(
 
     let new_user = users::ActiveModel {
         uuid: Set(Uuid::new_v4()),
-        fullname: Set(sign_up_params.fullname),
-        email: Set(sign_up_params.email),
-        encrypted_password: Set(hash_password(sign_up_params.password)?),
+        fullname: Set(sign_up_params.fullname.unwrap()),
+        email: Set(sign_up_params.email.unwrap()),
+        encrypted_password: Set(hash_password(sign_up_params.password.unwrap())?),
         ..Default::default()
     }
     .save(&db)
@@ -158,10 +160,8 @@ pub async fn refresh_token(
     let secret = format!("{}", dotenv!("JWT_REFRESH_TOKEN_SECRET"));
     let decoded_refresh_token = decode_token(token, secret)?;
 
-    let _user = Users::find_by_id(decoded_refresh_token.id)
-        .one(&db)
-        .await
-        .map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"))?;
+    // find if user exist on db
+    let _user = find_user_by_id(decoded_refresh_token.id, db).await?;
 
     let token = create_jwt(decoded_refresh_token.id)?;
 

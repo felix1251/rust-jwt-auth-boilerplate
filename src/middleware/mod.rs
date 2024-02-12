@@ -1,4 +1,4 @@
-use crate::models::users::Entity as Users;
+use crate::database::query::users::find_user_by_id;
 use crate::utils::{app_error::AppError, jwt::decode_token};
 use axum::extract::State;
 use axum::http::HeaderMap;
@@ -9,7 +9,7 @@ use axum::{
     response::Response,
 };
 use dotenvy_macro::dotenv;
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::DatabaseConnection;
 use tower_http::cors::{Any, CorsLayer};
 
 pub async fn auth_user(
@@ -25,10 +25,7 @@ pub async fn auth_user(
     let secret = format!("{}", dotenv!("JWT_TOKEN_SECRET"));
     let decoded_token = decode_token(token, secret)?;
 
-    let user = Users::find_by_id(decoded_token.id)
-        .one(&db)
-        .await
-        .map_err(|_| AppError::new(StatusCode::UNAUTHORIZED, "UNAUTHORIZED"))?;
+    let user = find_user_by_id(decoded_token.id, db).await?;
 
     if let Some(current_user) = user {
         request.extensions_mut().insert(current_user);
@@ -55,7 +52,7 @@ pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
 
 pub fn cors() -> CorsLayer {
     CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_origin(Any)
 }
 
