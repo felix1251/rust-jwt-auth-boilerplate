@@ -1,5 +1,8 @@
 use crate::{
-    models::users::{self, Entity as Users, Model as UsersModel},
+    models::{
+        prelude::Users,
+        users::{self, Model as UsersModel},
+    },
     utils::app_error::AppError,
 };
 use axum::http::StatusCode;
