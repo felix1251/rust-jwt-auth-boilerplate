@@ -1,11 +1,14 @@
 use crate::{
-    database::query::users::{find_user_by_email, find_user_by_id},
+    database::{
+        mutation::users::{create_user, CreateUserPayload},
+        query::users::{find_user_by_email, find_user_by_id},
+    },
     middleware::{get_auth_header, strip_auth_header},
-    models::users::{self, Model as UserModel},
+    models::users::Model as UserModel,
     utils::{
         app_error::AppError,
         jwt::{create_jwt, decode_token, AuthTokens},
-        password::{hash_password, verify_password},
+        password::verify_password,
     },
 };
 use axum::{
@@ -14,7 +17,7 @@ use axum::{
     Extension, Json,
 };
 use dotenvy_macro::dotenv;
-use sea_orm::{prelude::DateTimeWithTimeZone, ActiveModelTrait, DatabaseConnection, Set};
+use sea_orm::{prelude::DateTimeWithTimeZone, DatabaseConnection};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -55,19 +58,19 @@ pub struct InvalidCredentials {
 )]
 pub async fn sign_in(
     State(db): State<DatabaseConnection>,
-    Json(sign_in_params): Json<SignInParams>,
+    Json(params): Json<SignInParams>,
 ) -> Result<Json<AuthTokens>, AppError> {
-    if let Err(err) = sign_in_params.validate() {
+    if let Err(err) = params.validate() {
         return Err(AppError::new(
             StatusCode::UNPROCESSABLE_ENTITY,
             format!("{}", err),
         ));
     }
 
-    let user = find_user_by_email(sign_in_params.email.unwrap(), db).await?;
+    let user = find_user_by_email(params.email.unwrap(), db).await?;
 
     if let Some(user) = user {
-        if !verify_password(sign_in_params.password.unwrap(), &user.encrypted_password)? {
+        if !verify_password(params.password.unwrap(), &user.encrypted_password)? {
             return Err(AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"));
         }
         let token = create_jwt(user.id)?;
@@ -83,16 +86,16 @@ pub struct SignUpParams {
         required(message = "Email is required"),
         email(message = "Invalid Email")
     )]
-    email: Option<String>,
+    pub email: Option<String>,
     #[schema(example = "John Doe", nullable = false)]
     #[validate(required(message = "Fullname is required"))]
-    fullname: Option<String>,
+    pub fullname: Option<String>,
     #[schema(example = "password", nullable = false)]
     #[validate(
         required(message = "Password is required"),
         length(min = 6, message = "Password must be at least 6 characters")
     )]
-    password: Option<String>,
+    pub password: Option<String>,
 }
 
 #[utoipa::path(
@@ -108,31 +111,21 @@ pub struct SignUpParams {
 )]
 pub async fn sign_up(
     State(db): State<DatabaseConnection>,
-    Json(sign_up_params): Json<SignUpParams>,
+    Json(params): Json<SignUpParams>,
 ) -> Result<Json<AuthTokens>, AppError> {
-    if let Err(err) = sign_up_params.validate() {
+    if let Err(err) = params.validate() {
         return Err(AppError::new(
             StatusCode::UNPROCESSABLE_ENTITY,
             format!("{}", err),
         ));
     }
 
-    let new_user = users::ActiveModel {
-        uuid: Set(Uuid::new_v4()),
-        fullname: Set(sign_up_params.fullname.unwrap()),
-        email: Set(sign_up_params.email.unwrap()),
-        encrypted_password: Set(hash_password(sign_up_params.password.unwrap())?),
-        ..Default::default()
-    }
-    .save(&db)
-    .await
-    .map_err(|err| match err {
-        sea_orm::DbErr::Query(_err) => {
-            AppError::new(StatusCode::UNPROCESSABLE_ENTITY, "User exist or Invalid")
-        }
-        _else => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
-    })?;
-
+    let create_user_payload = CreateUserPayload {
+        fullname: params.fullname.unwrap(),
+        email: params.email.unwrap(),
+        password: params.password.unwrap(),
+    };
+    let new_user = create_user(create_user_payload, db).await?;
     let token = create_jwt(new_user.id.unwrap())?;
 
     return Ok(Json(token));
