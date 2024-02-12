@@ -111,6 +111,7 @@ pub struct SignUpParams {
     path = "/auth/sign_up",
     responses(
         (status = 201, description = "User created with token response", body = AuthTokens),
+        (status = 409, description = "User exist or Invalid", body = UserExistOrInvalidSchema),
         (status = 422, description = "Request body validation errors", body = ValidationErrorSchema),
         (status = 500, description = "Internal server error", body = InternalErrorSchema),
     )
