@@ -6,7 +6,7 @@ use crate::{
     middleware::{get_auth_header, strip_auth_header},
     models::users::Model as UserModel,
     utils::{
-        app_error::AppError,
+        app_error::{AppError, DynamicErrorType},
         jwt::{create_jwt, decode_token, AuthTokens},
         password::verify_password,
     },
@@ -41,7 +41,7 @@ pub struct InvalidCredentials {
     #[schema(example = 404)]
     pub status: u16,
     #[schema(example = "INVALID_CREDENTIALS")]
-    pub message: String,
+    pub error: String,
 }
 
 #[utoipa::path(
@@ -63,7 +63,7 @@ pub async fn sign_in(
     if let Err(err) = params.validate() {
         return Err(AppError::new(
             StatusCode::UNPROCESSABLE_ENTITY,
-            format!("{}", err),
+            DynamicErrorType::ValidationErrors(err),
         ));
     }
 
@@ -71,12 +71,18 @@ pub async fn sign_in(
 
     if let Some(user) = user {
         if !verify_password(params.password.unwrap(), &user.encrypted_password)? {
-            return Err(AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"));
+            return Err(AppError::new(
+                StatusCode::NOT_FOUND,
+                DynamicErrorType::String("INVALID_CREDENTIALS".to_string()),
+            ));
         }
         let token = create_jwt(user.id)?;
         return Ok(Json(token));
     }
-    return Err(AppError::new(StatusCode::NOT_FOUND, "INVALID_CREDENTIALS"));
+    return Err(AppError::new(
+        StatusCode::NOT_FOUND,
+        DynamicErrorType::String("INVALID_CREDENTIALS".to_string()),
+    ));
 }
 
 #[derive(Serialize, Deserialize, Validate, ToSchema)]
@@ -116,7 +122,7 @@ pub async fn sign_up(
     if let Err(err) = params.validate() {
         return Err(AppError::new(
             StatusCode::UNPROCESSABLE_ENTITY,
-            format!("{}", err),
+            DynamicErrorType::ValidationErrors(err),
         ));
     }
 
