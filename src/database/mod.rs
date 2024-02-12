@@ -1,3 +1,4 @@
+pub mod mutation;
 pub mod query;
 
 use sea_orm::{Database, DatabaseConnection};
