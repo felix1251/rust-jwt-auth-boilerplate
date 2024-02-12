@@ -1,9 +1,9 @@
 use crate::database::query::users::find_user_by_id;
 use crate::utils::{app_error::AppError, jwt::decode_token};
-use axum::extract::State;
-use axum::http::HeaderMap;
 use axum::{
     extract::Request,
+    extract::State,
+    http::HeaderMap,
     http::{Method, StatusCode},
     middleware::Next,
     response::Response,
