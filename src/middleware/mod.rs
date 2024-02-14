@@ -1,6 +1,7 @@
 use crate::database::query::users::find_user_by_id;
 use crate::utils::app_error::DynamicErrorType;
 use crate::utils::{app_error::AppError, jwt::decode_token};
+use axum::http::HeaderMap;
 use axum::{
     extract::Request,
     extract::State,
@@ -19,16 +20,7 @@ pub async fn auth_user(
     next: Next,
 ) -> Result<Response, AppError> {
     // let auth_header = get_auth_header(headers)?;
-    let token = request
-        .headers()
-        .typed_get::<Authorization<Bearer>>()
-        .ok_or(AppError::new(
-            StatusCode::UNAUTHORIZED,
-            DynamicErrorType::String("UNAUTHORIZED".to_string()),
-        ))?
-        .token()
-        .to_owned();
-
+    let token = get_auth_token_header(request.headers())?;
     let secret = format!("{}", dotenv!("JWT_TOKEN_SECRET"));
     let decoded_token = decode_token(token.clone(), secret)?;
     let user = find_user_by_id(decoded_token.id, db).await?;
@@ -37,22 +29,25 @@ pub async fn auth_user(
         request.extensions_mut().insert(current_user);
         return Ok(next.run(request).await);
     }
+
     return Err(AppError::new(
         StatusCode::UNAUTHORIZED,
         DynamicErrorType::String("UNAUTHORIZED".to_string()),
     ));
 }
 
-// pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
-//     let auth_header = headers.get("Authorization");
-//     if let Some(token) = auth_header {
-//         return Ok(token.to_str().unwrap());
-//     }
-//     return Err(AppError::new(
-//         StatusCode::UNAUTHORIZED,
-//         DynamicErrorType::String("UNAUTHORIZED".to_string()),
-//     ));
-// }
+pub fn get_auth_token_header(headers: &HeaderMap) -> Result<String, AppError> {
+    let token = headers
+        .typed_get::<Authorization<Bearer>>()
+        .ok_or(AppError::new(
+            StatusCode::UNAUTHORIZED,
+            DynamicErrorType::String("UNAUTHORIZED".to_string()),
+        ))?
+        .token()
+        .to_owned();
+
+    Ok(token)
+}
 
 // pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
 //     let token = auth_header.strip_prefix("Bearer ");
