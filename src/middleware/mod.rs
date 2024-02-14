@@ -49,17 +49,6 @@ pub fn get_auth_token_header(headers: &HeaderMap) -> Result<String, AppError> {
     Ok(token)
 }
 
-// pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
-//     let token = auth_header.strip_prefix("Bearer ");
-//     if let Some(token) = token {
-//         return Ok(token);
-//     }
-//     return Err(AppError::new(
-//         StatusCode::UNAUTHORIZED,
-//         DynamicErrorType::String("UNAUTHORIZED".to_string()),
-//     ));
-// }
-
 pub fn cors() -> CorsLayer {
     CorsLayer::new()
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
