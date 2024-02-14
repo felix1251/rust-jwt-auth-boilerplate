@@ -4,11 +4,11 @@ use crate::utils::{app_error::AppError, jwt::decode_token};
 use axum::{
     extract::Request,
     extract::State,
-    http::HeaderMap,
     http::{Method, StatusCode},
     middleware::Next,
     response::Response,
 };
+use axum_extra::headers::{authorization::Bearer, Authorization, HeaderMapExt};
 use dotenvy_macro::dotenv;
 use sea_orm::DatabaseConnection;
 use tower_http::cors::{Any, CorsLayer};
@@ -18,14 +18,19 @@ pub async fn auth_user(
     mut request: Request,
     next: Next,
 ) -> Result<Response, AppError> {
-    let headers = request.headers();
-
-    let auth_header = get_auth_header(headers)?;
-    let token = strip_auth_header(auth_header)?;
+    // let auth_header = get_auth_header(headers)?;
+    let token = request
+        .headers()
+        .typed_get::<Authorization<Bearer>>()
+        .ok_or(AppError::new(
+            StatusCode::UNAUTHORIZED,
+            DynamicErrorType::String("UNAUTHORIZED".to_string()),
+        ))?
+        .token()
+        .to_owned();
 
     let secret = format!("{}", dotenv!("JWT_TOKEN_SECRET"));
-    let decoded_token = decode_token(token, secret)?;
-
+    let decoded_token = decode_token(token.clone(), secret)?;
     let user = find_user_by_id(decoded_token.id, db).await?;
 
     if let Some(current_user) = user {
@@ -38,27 +43,27 @@ pub async fn auth_user(
     ));
 }
 
-pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
-    let auth_header = headers.get("Authorization");
-    if let Some(token) = auth_header {
-        return Ok(token.to_str().unwrap());
-    }
-    return Err(AppError::new(
-        StatusCode::UNAUTHORIZED,
-        DynamicErrorType::String("UNAUTHORIZED".to_string()),
-    ));
-}
+// pub fn get_auth_header(headers: &HeaderMap) -> Result<&str, AppError> {
+//     let auth_header = headers.get("Authorization");
+//     if let Some(token) = auth_header {
+//         return Ok(token.to_str().unwrap());
+//     }
+//     return Err(AppError::new(
+//         StatusCode::UNAUTHORIZED,
+//         DynamicErrorType::String("UNAUTHORIZED".to_string()),
+//     ));
+// }
 
-pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
-    let token = auth_header.strip_prefix("Bearer ");
-    if let Some(token) = token {
-        return Ok(token);
-    }
-    return Err(AppError::new(
-        StatusCode::UNAUTHORIZED,
-        DynamicErrorType::String("UNAUTHORIZED".to_string()),
-    ));
-}
+// pub fn strip_auth_header(auth_header: &str) -> Result<&str, AppError> {
+//     let token = auth_header.strip_prefix("Bearer ");
+//     if let Some(token) = token {
+//         return Ok(token);
+//     }
+//     return Err(AppError::new(
+//         StatusCode::UNAUTHORIZED,
+//         DynamicErrorType::String("UNAUTHORIZED".to_string()),
+//     ));
+// }
 
 pub fn cors() -> CorsLayer {
     CorsLayer::new()
