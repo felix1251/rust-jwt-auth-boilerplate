@@ -150,11 +150,18 @@ pub async fn refresh_token(
     let decoded_refresh_token = decode_token(token, secret)?;
 
     // find if user exist on db
-    let _user = find_user_by_id(decoded_refresh_token.id, db).await?;
+    let db_user = find_user_by_id(decoded_refresh_token.id, db).await?;
 
-    let token = create_jwt(decoded_refresh_token.id)?;
+    if let Some(user) = db_user {
+        let token = create_jwt(user.id)?;
 
-    return Ok(Json(token));
+        return Ok(Json(token));
+    }
+
+    return Err(AppError::new(
+        StatusCode::UNAUTHORIZED,
+        DynamicAppError::String("UNAUTHORIZED"),
+    ));
 }
 
 #[derive(ToSchema, Serialize, Deserialize, Clone)]
