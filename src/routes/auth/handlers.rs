@@ -36,14 +36,6 @@ pub struct SignInParams {
     password: Option<String>,
 }
 
-#[derive(ToSchema)]
-pub struct InvalidCredentials {
-    #[schema(example = 404)]
-    pub status: u16,
-    #[schema(example = "INVALID_CREDENTIALS")]
-    pub error: &'static str,
-}
-
 #[utoipa::path(
     post,
     request_body = SignInParams,
@@ -51,7 +43,7 @@ pub struct InvalidCredentials {
     path = "/auth/sign_in",
     responses(
         (status = 200, description = "Token response", body = AuthTokens),
-        (status = 404, description = "Invalid credentials", body = InvalidCredentials),
+        (status = 404, description = "Invalid credentials", body = InvalidCredentialSchema),
         (status = 422, description = "Request body validation errors", body = ValidationErrorSchema),
         (status = 500, description = "Internal server error", body = InternalErrorSchema),
     )

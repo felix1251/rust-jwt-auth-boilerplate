@@ -12,8 +12,6 @@ use utoipa_swagger_ui::SwaggerUi;
     info(title = "JWT Auth", description = "JWT Auth boilerplate"),
     paths(
         home::home,
-        // users
-        // auths
         auth::handlers::me,
         auth::handlers::sign_in,
         auth::handlers::sign_up,
@@ -25,11 +23,9 @@ use utoipa_swagger_ui::SwaggerUi;
             InternalErrorSchema,
             ValidationErrorSchema,
             UserExistOrInvalidSchema,
-            InvalidCredentials,
+            InvalidCredentialSchema,
             jwt::AuthTokens,
             home::HomeSchema,
-            // users
-            // auth
             auth::handlers::SignInParams,
             auth::handlers::SignUpParams,
             auth::handlers::CurrentUser,
@@ -89,7 +85,7 @@ struct UserExistOrInvalidSchema {
 }
 
 #[derive(ToSchema, Serialize)]
-struct InvalidCredentials {
+struct InvalidCredentialSchema {
     #[schema(example = 404)]
     pub status: u16,
     #[schema(example = "INVALID_CREDENTIALS")]
