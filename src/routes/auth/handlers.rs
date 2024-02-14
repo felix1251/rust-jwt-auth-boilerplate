@@ -3,7 +3,6 @@ use crate::{
         mutation::users::{create_user, CreateUserPayload},
         query::users::{find_user_by_email, find_user_by_id},
     },
-    middleware::{get_auth_header, strip_auth_header},
     models::users::Model as UserModel,
     utils::{
         app_error::{AppError, DynamicErrorType},
@@ -16,6 +15,7 @@ use axum::{
     http::StatusCode,
     Extension, Json,
 };
+use axum_extra::headers::{authorization::Bearer, Authorization, HeaderMapExt};
 use dotenvy_macro::dotenv;
 use sea_orm::{prelude::DateTimeWithTimeZone, DatabaseConnection};
 use serde::{Deserialize, Serialize};
@@ -153,9 +153,15 @@ pub async fn refresh_token(
     State(db): State<DatabaseConnection>,
     request: Request,
 ) -> Result<Json<AuthTokens>, AppError> {
-    let headers = request.headers();
-    let auth_header = get_auth_header(headers)?;
-    let token = strip_auth_header(auth_header)?;
+    let token = request
+        .headers()
+        .typed_get::<Authorization<Bearer>>()
+        .ok_or(AppError::new(
+            StatusCode::UNAUTHORIZED,
+            DynamicErrorType::String("UNAUTHORIZED".to_string()),
+        ))?
+        .token()
+        .to_owned();
 
     let secret = format!("{}", dotenv!("JWT_REFRESH_TOKEN_SECRET"));
     let decoded_refresh_token = decode_token(token, secret)?;

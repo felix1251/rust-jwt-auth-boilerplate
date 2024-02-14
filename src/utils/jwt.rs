@@ -59,7 +59,7 @@ pub fn encode_token(claim: Claims, secret: String) -> Result<String, AppError> {
     })
 }
 
-pub fn decode_token(token: &str, secret: String) -> Result<Claims, AppError> {
+pub fn decode_token(token: String, secret: String) -> Result<Claims, AppError> {
     let key = DecodingKey::from_secret(secret.as_bytes());
 
     let decoded_token = decode::<Claims>(&token, &key, &Validation::new(Algorithm::HS256))
