@@ -4,18 +4,18 @@ use validator::ValidationErrors;
 
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
-pub enum DynamicErrorType {
-    String(String),
+pub enum DynamicAppError {
+    String(&'static str),
     ValidationErrors(ValidationErrors),
 }
 
 pub struct AppError {
     code: StatusCode,
-    error: DynamicErrorType,
+    error: DynamicAppError,
 }
 
 impl AppError {
-    pub fn new(code: StatusCode, error: impl Into<DynamicErrorType>) -> Self {
+    pub fn new(code: StatusCode, error: impl Into<DynamicAppError>) -> Self {
         Self {
             code,
             error: error.into(),
@@ -39,5 +39,5 @@ impl IntoResponse for AppError {
 #[derive(Serialize)]
 struct ErrorResponse {
     status: u16,
-    error: DynamicErrorType,
+    error: DynamicAppError,
 }

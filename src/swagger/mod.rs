@@ -25,6 +25,7 @@ use utoipa_swagger_ui::SwaggerUi;
             InternalErrorSchema,
             ValidationErrorSchema,
             UserExistOrInvalidSchema,
+            InvalidCredentials,
             jwt::AuthTokens,
             home::HomeSchema,
             // users
@@ -32,7 +33,6 @@ use utoipa_swagger_ui::SwaggerUi;
             auth::handlers::SignInParams,
             auth::handlers::SignUpParams,
             auth::handlers::CurrentUser,
-            auth::handlers::InvalidCredentials,
         )
     ),
     modifiers(&SecurityAddon)
@@ -61,7 +61,7 @@ struct UnauthorizedSchema {
     #[schema(example = 401)]
     pub status: u16,
     #[schema(example = "UNAUTHORIZED")]
-    pub error: String,
+    pub error: &'static str,
 }
 
 #[derive(ToSchema, Serialize)]
@@ -69,7 +69,7 @@ struct InternalErrorSchema {
     #[schema(example = 500)]
     pub status: u16,
     #[schema(example = "INTERNAL_SERVER_ERROR")]
-    pub error: String,
+    pub error: &'static str,
 }
 
 #[derive(ToSchema, Serialize)]
@@ -77,7 +77,7 @@ struct ValidationErrorSchema {
     #[schema(example = 422)]
     pub status: u16,
     #[schema(example = json!({ "email": [{"code": "email", "message": "Invalid Email", "params": { "value": "sample" }}]}))]
-    pub error: String,
+    pub error: &'static str,
 }
 
 #[derive(ToSchema, Serialize)]
@@ -85,7 +85,15 @@ struct UserExistOrInvalidSchema {
     #[schema(example = 409)]
     pub status: u16,
     #[schema(example = "USER_EXIST_OR_INVALID")]
-    pub error: String,
+    pub error: &'static str,
+}
+
+#[derive(ToSchema, Serialize)]
+struct InvalidCredentials {
+    #[schema(example = 404)]
+    pub status: u16,
+    #[schema(example = "INVALID_CREDENTIALS")]
+    pub error: &'static str,
 }
 
 pub fn swagger_ui() -> SwaggerUi {

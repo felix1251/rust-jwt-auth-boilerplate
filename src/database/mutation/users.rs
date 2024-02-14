@@ -1,7 +1,7 @@
 use crate::{
     models::users::ActiveModel as UserActiveModel,
     utils::{
-        app_error::{AppError, DynamicErrorType},
+        app_error::{AppError, DynamicAppError},
         password::hash_password,
     },
 };
@@ -33,11 +33,11 @@ pub async fn create_user(
     .map_err(|err| match err {
         sea_orm::DbErr::Query(_err) => AppError::new(
             StatusCode::CONFLICT,
-            DynamicErrorType::String("USER_EXIST_OR_INVALID".to_string()),
+            DynamicAppError::String("USER_EXIST_OR_INVALID"),
         ),
         _else => AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+            DynamicAppError::String("INTERNAL_SERVER_ERROR"),
         ),
     })?;
 

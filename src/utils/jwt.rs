@@ -1,4 +1,4 @@
-use super::app_error::{AppError, DynamicErrorType};
+use super::app_error::{AppError, DynamicAppError};
 use axum::http::StatusCode;
 use chrono::{Duration, Utc};
 use dotenvy_macro::dotenv;
@@ -54,7 +54,7 @@ pub fn encode_token(claim: Claims, secret: String) -> Result<String, AppError> {
     encode(&Header::default(), &claim, &key).map_err(|_| {
         AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+            DynamicAppError::String("INTERNAL_SERVER_ERROR"),
         )
     })
 }
@@ -67,11 +67,11 @@ pub fn decode_token(token: String, secret: String) -> Result<Claims, AppError> {
             jsonwebtoken::errors::ErrorKind::ExpiredSignature
             | jsonwebtoken::errors::ErrorKind::InvalidToken => AppError::new(
                 StatusCode::UNAUTHORIZED,
-                DynamicErrorType::String("UNAUTHORIZED".to_string()),
+                DynamicAppError::String("UNAUTHORIZED"),
             ),
             _else => AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                DynamicErrorType::String("INTERNAL_SERVER_ERROR".to_string()),
+                DynamicAppError::String("INTERNAL_SERVER_ERROR"),
             ),
         })?;
 
