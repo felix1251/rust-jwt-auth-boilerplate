@@ -24,7 +24,7 @@ pub async fn auth_user(
     // let auth_header = get_auth_header(headers)?;
     let token = get_auth_token_header(request.headers())?;
     let secret = format!("{}", dotenv!("JWT_TOKEN_SECRET"));
-    let decoded_token = decode_token(token.clone(), secret)?;
+    let decoded_token = decode_token(token, secret)?;
     let user = find_user_by_id(decoded_token.id, db).await?;
 
     if let Some(current_user) = user {
