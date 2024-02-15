@@ -8,6 +8,7 @@ pub struct HomeSchema {
     message: &'static str,
 }
 
+/// Health check
 #[utoipa::path(
     get,
     tag = "Home",

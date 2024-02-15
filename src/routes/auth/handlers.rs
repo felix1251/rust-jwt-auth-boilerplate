@@ -36,6 +36,7 @@ pub struct SignInParams {
     password: Option<String>,
 }
 
+/// User Sign In
 #[utoipa::path(
     post,
     request_body = SignInParams,
@@ -96,6 +97,7 @@ pub struct SignUpParams {
     pub password: Option<String>,
 }
 
+/// User Sign Up
 #[utoipa::path(
     post,
     request_body = SignUpParams,
@@ -130,6 +132,7 @@ pub async fn sign_up(
     return Ok(Json(token));
 }
 
+/// Refresh token
 #[utoipa::path(
     post,
     tag = "Auth",
@@ -178,6 +181,7 @@ pub struct CurrentUser {
     pub updated_at: DateTimeWithTimeZone,
 }
 
+/// Current user information
 #[utoipa::path(
     get,
     tag = "Auth",
