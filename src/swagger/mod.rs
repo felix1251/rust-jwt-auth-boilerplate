@@ -31,6 +31,9 @@ use utoipa_swagger_ui::SwaggerUi;
             auth::handlers::CurrentUser,
         )
     ),
+    tags(
+        (name = "Auth", description = "Authentication endpoints.")
+    ),
     modifiers(&SecurityAddon)
 )]
 struct ApiDoc;
