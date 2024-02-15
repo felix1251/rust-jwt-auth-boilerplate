@@ -72,7 +72,7 @@ struct InternalErrorSchema {
 struct ValidationErrorSchema {
     #[schema(example = 422)]
     pub status: u16,
-    #[schema(example = json!({ "email": [{"code": "email", "message": "Invalid Email", "params": { "value": "sample" }}]}))]
+    #[schema(example = json!({"email": [{"code": "email", "message": "Invalid Email", "params": { "value": "sample" }}]}))]
     pub error: &'static str,
 }
 

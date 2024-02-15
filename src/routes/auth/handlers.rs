@@ -59,9 +59,9 @@ pub async fn sign_in(
         ));
     }
 
-    let user = find_user_by_email(params.email.unwrap(), db).await?;
+    let db_user = find_user_by_email(params.email.unwrap(), db).await?;
 
-    if let Some(user) = user {
+    if let Some(user) = db_user {
         if !verify_password(params.password.unwrap(), &user.encrypted_password)? {
             return Err(AppError::new(
                 StatusCode::NOT_FOUND,
