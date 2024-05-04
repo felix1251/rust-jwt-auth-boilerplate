@@ -15,7 +15,9 @@ pub async fn run(db_uri: String) {
     tracing::debug!("DB Connected");
 
     let services = routes::create_routes(db).await;
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+        .await
+        .unwrap();
     let local_address = listener.local_addr().unwrap();
 
     tracing::debug!("listening on http://{}", local_address);
