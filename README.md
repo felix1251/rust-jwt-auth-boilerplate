@@ -21,8 +21,6 @@ rust-jwt-auth-boilerplate
 └── README.md
 ```
 
-### Features
-
 - [x] Axum (Routing, Middleware, etc..)
 - [x] JsonWebToken
 - [x] PostgreSQL
