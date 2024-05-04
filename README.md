@@ -131,6 +131,6 @@ Remove git folder, so you can add it to your own repo later.
 rm -rf .git
 ```
 
-# Screenshots
+## Screenshots
 
 ![main](./screenshots/main.png)
